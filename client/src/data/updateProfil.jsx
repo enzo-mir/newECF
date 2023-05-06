@@ -9,7 +9,6 @@ export default async function updateProfil(
 ) {
   let postUpdateAccount = fetch("/updateProfil", {
     method: "POST",
-    crossDomain: true,
     headers: {
       "Content-Type": "application/json",
       Accept: "*",
@@ -24,10 +23,7 @@ export default async function updateProfil(
       oldEmail: oldEmail,
       oldPassword: oldPassword,
     }),
-  });
-  let postRes = postUpdateAccount
-    .then((res) => res.json())
-    .then(async (data) => await data);
+  }).then((res) => res.json());
 
-  return postRes;
+  return postUpdateAccount;
 }

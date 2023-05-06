@@ -9,9 +9,9 @@ import {
 } from "../../assets/style/headerStyle";
 import ProfilComponent from "./ProfilComponent";
 import Reserv from "./Reserv";
-import logout from "../../data/logout";
+import PropTypes from "prop-types";
 
-const Header = ({ isConnected, display, data, hours, isAdmin }) => {
+const Header = ({ isConnected, data, hours, isAdmin }) => {
   const [logPage, setLogPage] = useState(false);
   const [profilPage, setProfilPage] = useState(false);
   const [res, setRes] = useState(false);
@@ -34,14 +34,7 @@ const Header = ({ isConnected, display, data, hours, isAdmin }) => {
   const NavMenu = () => {
     return isAdmin ? (
       <HeaderContainer>
-        <NavLink
-          to="/"
-          className={({ isActive, isPending }) =>
-            isPending ? "pending" : isActive ? "active" : ""
-          }
-        >
-          Accueil
-        </NavLink>
+        <Link to="/">Accueil</Link>
       </HeaderContainer>
     ) : (
       <HeaderContainer>
@@ -98,7 +91,7 @@ const Header = ({ isConnected, display, data, hours, isAdmin }) => {
             </>
           ) : (
             <button id="profil" onClick={() => setProfilPage(true)}>
-              {userInfo && userInfo.userName.charAt(0)}
+              {userInfo ? userInfo.userName.charAt(0) : null}
             </button>
           )}
         </div>
@@ -106,7 +99,7 @@ const Header = ({ isConnected, display, data, hours, isAdmin }) => {
     );
   };
 
-  return display ? (
+  return (
     <>
       {logPage && <Log displayPage={setLogPage} togglePage={togglePage} />}
       {profilPage && (
@@ -146,7 +139,15 @@ const Header = ({ isConnected, display, data, hours, isAdmin }) => {
         />
       </Wrapper>
     </>
-  ) : null;
+  );
+};
+
+Header.propTypes = {
+  data: PropTypes.object,
+  isAdmin: PropTypes.bool,
+  isConnected: PropTypes.bool,
+  display: PropTypes.bool,
+  hours: PropTypes.object,
 };
 
 export default Header;

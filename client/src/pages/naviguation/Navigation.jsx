@@ -1,39 +1,30 @@
 import { useState } from "react";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Home from "../Home";
-import Carte from "../Carte";
+import Card from "../Card";
 import Admin from "../Admin";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import PrivateRoute from "./PrivateRoute";
 import Connect from "../../data/Connect";
 import UndifinedRoute from "../UndifinedPage";
-import { query } from "../../data/fetchAllData";
-import { QueryClient, QueryClientProvider, useQueries } from "react-query";
-import Loading from "../Loading";
-import { carteQuery } from "../../data/fetchCarteData";
-const client = new QueryClient();
+import PropTypes from "prop-types";
 
-const Navigation = ({ connected, admin }) => {
-  const [isConnected, setIsConnected] = useState(connected);
-  const [isAdmin, setIsAdmin] = useState(admin);
+const Navigation = ({ cardQuery, allDataQuery }) => {
+  const [isConnected, setIsConnected] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [userData, setUserData] = useState(null);
 
-  const DataProvider = () => {
-    const [cardQuery, allDataQuery] = useQueries([
-      { queryKey: ["card"], queryFn: carteQuery },
-      { queryKey: ["usesData"], queryFn: query },
-    ]);
-
-    return cardQuery.isLoading || allDataQuery.isLoading ? (
-      <Loading />
-    ) : cardQuery.error || allDataQuery.error ? (
-      <div>error</div>
-    ) : cardQuery.data && allDataQuery.data ? (
+  return (
+    <>
+      <Connect
+        isConnected={setIsConnected}
+        isAdmin={setIsAdmin}
+        setData={setUserData}
+      />
       <BrowserRouter>
         <Header
           isConnected={isConnected}
-          display={true}
           data={userData}
           hours={allDataQuery.data.heures}
           isAdmin={isAdmin}
@@ -47,7 +38,7 @@ const Navigation = ({ connected, admin }) => {
           <Route
             path="/carte"
             element={
-              <Carte
+              <Card
                 entree={cardQuery.data.entree}
                 plat={cardQuery.data.plat}
                 dessert={cardQuery.data.dessert}
@@ -75,19 +66,12 @@ const Navigation = ({ connected, admin }) => {
         </Routes>
         <Footer hours={allDataQuery.data.heures} />
       </BrowserRouter>
-    ) : null;
-  };
-
-  return (
-    <QueryClientProvider client={client}>
-      <DataProvider />
-      <Connect
-        isConnected={setIsConnected}
-        isAdmin={setIsAdmin}
-        setData={setUserData}
-      />
-    </QueryClientProvider>
+      ;
+    </>
   );
 };
-
+Navigation.propTypes = {
+  allDataQuery: PropTypes.object,
+  cardQuery: PropTypes.object,
+};
 export default Navigation;

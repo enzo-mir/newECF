@@ -1,7 +1,7 @@
-import React from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 
-const Allergie = ({ onchange,value }) => {
+const Allergie = ({ onchange, value }) => {
   return (
     <Wrapper>
       <input
@@ -12,6 +12,11 @@ const Allergie = ({ onchange,value }) => {
       />
     </Wrapper>
   );
+};
+
+Allergie.propTypes = {
+  onchange: PropTypes.func,
+  value: PropTypes.string,
 };
 
 const Wrapper = styled.div`

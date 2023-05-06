@@ -8,10 +8,10 @@ import {
   DessertSection,
   MenuSection,
 } from "../assets/style/carteStyle";
+import PropTypes from "prop-types";
 
-export default function Carte({ entree, plat, dessert, menu }) {
+export default function Card({ entree, plat, dessert, menu }) {
   const [res, setRes] = useState(false);
-
 
   function mapingSimilarityFood(food, title) {
     return food === entree || food === plat ? (
@@ -84,7 +84,7 @@ export default function Carte({ entree, plat, dessert, menu }) {
 
   return (
     <>
-      {res && <Reserv res={setRes} />}
+      {res ? <Reserv res={setRes} /> : null}
       <CarteContainer>
         <h1>La carte</h1>
         <MenuContainer>
@@ -101,3 +101,10 @@ export default function Carte({ entree, plat, dessert, menu }) {
     </>
   );
 }
+
+Card.propTypes = {
+  entree: PropTypes.array,
+  plat: PropTypes.array,
+  dessert: PropTypes.array,
+  menu: PropTypes.array,
+};

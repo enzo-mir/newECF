@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Wrapper } from "../../assets/style/footerStyle";
 import Reserv from "./Reserv";
+import PropTypes from "prop-types";
 
 const Footer = ({ hours }) => {
   const [res, setRes] = useState(false);
@@ -13,7 +14,7 @@ const Footer = ({ hours }) => {
         <table id="horaires">
           <thead>
             <tr>
-              <th>Horaires d'ouvertures</th>
+              <th>Horaires d&#39;ouvertures</th>
             </tr>
           </thead>
           <tbody>
@@ -47,6 +48,10 @@ const Footer = ({ hours }) => {
       </Wrapper>
     </>
   );
+};
+
+Footer.propTypes = {
+  hours: PropTypes.array,
 };
 
 export default Footer;

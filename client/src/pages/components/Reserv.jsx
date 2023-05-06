@@ -8,6 +8,7 @@ import {
   HoursList,
 } from "../../assets/style/reserveStyle";
 import { Cross } from "../../assets/style/cross";
+import PropTypes from "prop-types";
 
 export default function Reserv({ res, userData, hours }) {
   const [date, setDate] = useState(null);
@@ -227,9 +228,9 @@ export default function Reserv({ res, userData, hours }) {
             id="email"
             required
             placeholder="Entrez votre e-mail"
-            value={email}
+            value={userData ? userData.email : email}
             onChange={(e) =>
-              userData !== null ? null : setEmail(e.target.value)
+              userData ? userData.email : setEmail(e.target.value)
             }
           />
           <input
@@ -237,9 +238,9 @@ export default function Reserv({ res, userData, hours }) {
             id="name"
             required
             placeholder="Entrez votre nom"
-            value={name}
+            value={userData ? userData.userName : name}
             onChange={(e) =>
-              userData !== null ? null : setName(e.target.value)
+              userData ? userData.userName : setName(e.target.value)
             }
           />
         </OptionsReserv>
@@ -281,7 +282,7 @@ export default function Reserv({ res, userData, hours }) {
         </div>
         <div id="finalCase">
           <p
-            onClick={(e) => {
+            onClick={() => {
               setShowAllergy(!showAllergy);
               setAlergy(alergy);
             }}
@@ -309,3 +310,8 @@ export default function Reserv({ res, userData, hours }) {
     </Overlay>
   );
 }
+Reserv.propTypes = {
+  res: PropTypes.func,
+  userData: PropTypes.object,
+  hours: PropTypes.object,
+};

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import editBtn from "../assets/images/edit_btn.png";
 import adminHoursPost from "../data/adminHoursPost";
 import AdminEditImages from "./components/admin/AdminEditImages";
@@ -11,6 +11,7 @@ import {
 import logout from "../data/logout";
 import adminImageDeleted from "../data/adminImageDeleted";
 import CardEdition from "./components/admin/CardEdition";
+import PropTypes from "prop-types";
 
 const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
   const [hoursEdit, setHoursEdit] = useState(false);
@@ -25,6 +26,8 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
   const [imagesEditUrl, setImageEditUrl] = useState();
   const [addImage, setAddImage] = useState();
   const [errorHour, setErrorHour] = useState(false);
+  const imageTitleDetails = useRef();
+  const imageDescDetails = useRef();
 
   useEffect(() => {
     return () => {
@@ -41,30 +44,30 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
     event.target.parentNode.replaceChild(element, event.target);
   }
 
-  function submitEdition(elem) {
+  function submitHourEdition(elem) {
     let data = [];
     elem.forEach((element) => {
       let day = elem[0].parentElement.firstChild.textContent;
       let time = element.getAttribute("class");
       data.push({ day: day, time: time, target: element.value });
     });
-    let test;
+    let hourRegexTesting;
     for (let i = 0; i < elem.length; i++) {
       let hourRegexe = new RegExp(
         /^(fermer)|([0-1][0-9]|2[0-4])h([1-5][0-9]|60|0[1-9]|[1-9]0)? - ([0-1][0-9]|2[0-4])h([1-5][0-9]|60|0[1-9]|[1-9]0)?$/dgim
       );
       const inputs = elem[i];
-      test = hourRegexe.test(inputs.value);
+      hourRegexTesting = hourRegexe.test(inputs.value);
     }
 
-    if (test) {
+    if (hourRegexTesting) {
       setErrorHour(false);
       adminHoursPost(data);
       window.location.reload();
     } else setErrorHour(true);
   }
 
-  function editableCarte(event) {
+  function editableCard(event) {
     let title = event.target.parentNode.firstChild.textContent;
     let desc = event.target.parentNode.children[1].textContent;
     let price = event.target.parentNode.children[2].textContent;
@@ -74,24 +77,16 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
     setDisplayEditCard(true);
   }
 
-  function imageEdit(event) {
+  function imageEdit(event, title, description) {
+    imageTitleDetails.current = title;
+    imageDescDetails.current = description;
     let parentElement = event.target.parentNode.parentNode;
-    let imagesComponents = parentElement.querySelector("p");
-    let image = parentElement.querySelector("img");
-    let contentTarget = imagesComponents.textContent;
+    let imageTargeted = parentElement.querySelector("img");
 
-    setImageEditUrl(image.getAttribute("src"));
-    setImageEditTitle(
-      contentTarget.slice(
-        contentTarget.indexOf(":") + 2,
-        contentTarget.indexOf("Description :")
-      )
-    );
-    setImageEditDesc(
-      contentTarget.slice(
-        contentTarget.indexOf(":", contentTarget.indexOf(":") + 1) + 2
-      )
-    );
+    setImageEditUrl(imageTargeted.getAttribute("src"));
+    setImageEditTitle(imageTitleDetails.current);
+    setImageEditDesc(imageDescDetails.current);
+
     setAddImage(false);
     setDisplayEditImage(true);
   }
@@ -113,7 +108,7 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
   return (
     <>
       <Wrapper>
-        {displayEditImage && (
+        {displayEditImage ? (
           <AdminEditImages
             title={imagesEditTitle}
             description={imagesEditDesc}
@@ -121,9 +116,9 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
             displaying={setDisplayEditImage}
             adding={addImage}
           />
-        )}
+        ) : null}
         <ImgWrapper>
-          <h1>Galerie d'images</h1>
+          <h1>Galerie d&#39;images</h1>
           <div className="imgGalery">
             {imagesApi.map((images, id) => {
               return (
@@ -136,17 +131,23 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
                     Description : {images.description}
                   </p>
                   <aside>
-                    <button onClick={(e) => imageEdit(e)}>Éditer</button>
+                    <button
+                      onClick={(e) =>
+                        imageEdit(e, images.titre, images.description)
+                      }
+                    >
+                      Éditer
+                    </button>
                     <button onClick={(e) => handleDelete(e)}>Supprimer</button>
                   </aside>
                 </div>
               );
             })}
-            <button onClick={(e) => imageAdd(e)}>Ajouter +</button>
+            <button onClick={() => imageAdd()}>Ajouter +</button>
           </div>
         </ImgWrapper>
         <HoursContainer>
-          <h1>Horaires d'ouvertures</h1>
+          <h1>Horaires d&#39;ouvertures</h1>
           <p>(Cliquez sur les horaires pour les éditer)</p>
           <p className={errorHour ? "format" : ""}>
             Format horaires, exemples : <br />
@@ -208,7 +209,7 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
               <p>Édition finit</p>
               <button
                 onClick={() =>
-                  submitEdition(
+                  submitHourEdition(
                     document.querySelectorAll("article table tbody input")
                   )
                 }
@@ -242,7 +243,7 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
                         <h3>{food.nom}</h3>
                         <p>{food.description}</p>
                         <p>{food.prix}€</p>
-                        <button onClick={(e) => editableCarte(e)}>
+                        <button onClick={(e) => editableCard(e)}>
                           <img src={editBtn} alt="edit btn" />
                         </button>
                       </div>
@@ -257,7 +258,7 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
                         <h3>{food.nom}</h3>
                         <p>{food.description}</p>
                         <p>{food.prix}€</p>
-                        <button onClick={(e) => editableCarte(e)}>
+                        <button onClick={(e) => editableCard(e)}>
                           <img src={editBtn} alt="edit btn" />
                         </button>
                       </div>
@@ -279,7 +280,7 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
                         <h3>{food.nom}</h3>
                         <p>{food.description}</p>
                         <p>{food.prix}€</p>
-                        <button onClick={(e) => editableCarte(e)}>
+                        <button onClick={(e) => editableCard(e)}>
                           <img src={editBtn} alt="edit btn" />
                         </button>
                       </div>
@@ -294,7 +295,7 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
                         <h3>{food.nom}</h3>
                         <p>{food.description}</p>
                         <p>{food.prix}€</p>
-                        <button onClick={(e) => editableCarte(e)}>
+                        <button onClick={(e) => editableCard(e)}>
                           <img src={editBtn} alt="edit btn" />
                         </button>
                       </div>
@@ -314,7 +315,7 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
                       <h3>{food.nom}</h3>
                       <p>{food.description}</p>
                       <p>{food.prix}€</p>
-                      <button onClick={(e) => editableCarte(e)}>
+                      <button onClick={(e) => editableCard(e)}>
                         <img src={editBtn} alt="edit btn" />
                       </button>
                     </div>
@@ -334,7 +335,7 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
                         <h3>{food.nom}</h3>
                         <p>{food.description}</p>
                         <p>{food.formule}</p>
-                        <button onClick={(e) => editableCarte(e)}>
+                        <button onClick={(e) => editableCard(e)}>
                           <img src={editBtn} alt="edit btn" />
                         </button>
                       </div>
@@ -354,6 +355,15 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
       </Wrapper>
     </>
   );
+};
+
+Admin.propTypes = {
+  entree: PropTypes.object,
+  plat: PropTypes.object,
+  dessert: PropTypes.object,
+  menu: PropTypes.object,
+  heures: PropTypes.array,
+  imagesApi: PropTypes.array,
 };
 
 export default Admin;

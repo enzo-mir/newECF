@@ -1,11 +1,11 @@
 import "./assets/style/App.css";
 import GlobalStyle from "./pages/UI/GlobalStyle";
-import Navigation from "./pages/naviguation/Navigation";
+import QueryRender from "./queryComponent/QueryRender";
 
 function App() {
   return (
     <>
-      <Navigation connected={false} admin={false} />
+      <QueryRender />
       <GlobalStyle />
     </>
   );

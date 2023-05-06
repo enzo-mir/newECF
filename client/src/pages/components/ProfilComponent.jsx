@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Overlay } from "../../assets/style/overlay";
 import { ContainerSettings } from "../../assets/style/profilComponentsStyle";
 import updateProfil from "../../data/updateProfil";
 import logout from "../../data/logout";
 import deleteAccount from "../../data/deleteAccount";
+import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 
 const ProfilComponent = ({ displayProfil, userData }) => {
+  const navigate = useNavigate();
   const [editable, setEditable] = useState(false);
   const [name, setName] = useState(userData.userName);
   const [email, setEmail] = useState(userData.email);
@@ -35,53 +38,71 @@ const ProfilComponent = ({ displayProfil, userData }) => {
   };
 
   function edit(content) {
-    return editable === false ? (
-      <strong>{content}</strong>
-    ) : content === name ? (
-      <input
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-    ) : content === email ? (
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-    ) : content === guests ? (
-      <input
-        type="number"
-        min="1"
-        max="9"
-        value={guests}
-        onChange={(e) => setGuests(e.target.value)}
-      />
-    ) : content === alergy ? (
-      <input
-        type="text"
-        value={alergy}
-        onChange={(e) => setAlergy(e.target.value)}
-      />
-    ) : content === mdp ? (
-      <input type="text" value={mdp} onChange={(e) => setMdp(e.target.value)} />
-    ) : null;
+    if (!editable) {
+      return <strong>{content}</strong>;
+    } else {
+      switch (content) {
+        case name:
+          return (
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          );
+        case email:
+          return (
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          );
+        case guests:
+          return (
+            <input
+              type="number"
+              min="1"
+              max="9"
+              value={guests}
+              onChange={(e) => setGuests(e.target.value)}
+            />
+          );
+        case alergy:
+          return (
+            <input
+              type="text"
+              value={alergy}
+              onChange={(e) => setAlergy(e.target.value)}
+            />
+          );
+        case mdp:
+          <input
+            type="text"
+            value={mdp}
+            onChange={(e) => setMdp(e.target.value)}
+          />;
+          return;
+        default:
+          break;
+      }
+    }
   }
 
-  function validationForm(obj, event) {
+  function validationForm(obj) {
     let values = Object.values(obj);
     var nameRegex = new RegExp(/^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/);
     var emailRegex = new RegExp(
-      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/g
+      /^(([^<>()[\]\\.,;:\s@\\"]+(\.[^<>()[\]\\.,;:\s@\\"]+)*)|(\\".+\\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/g
     );
     var pwdRegex = new RegExp(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/);
-    var alergyRegex = nameRegex;
+    var alergyRegex = new RegExp(/^([a-z+A-Z\\,]+[a-z+A-Z])$/gm);
     var guestsRegex = new RegExp(/^([1-9])$/);
 
     if (nameRegex.test(values[0]) && values[0]) {
       if (emailRegex.test(values[1]) && values[1]) {
         if (guestsRegex.test(values[3]) && values[3]) {
-          if (alergyRegex.test(values[4])) {
+          if (alergyRegex.test(values[4]) || !values[4]) {
             if (pwdRegex.test(values[2] && values[2])) {
               updateProfil(
                 values[0],
@@ -92,19 +113,9 @@ const ProfilComponent = ({ displayProfil, userData }) => {
                 values[5],
                 values[6]
               ).then((data) =>
-                Object.keys(data) == "erreur"
-                  ? setValidationMessage(Object.values(data))
-                  : (setValidationMessage("Profil mis a jour"),
-                    window.localStorage.setItem(
-                      "userToken",
-                      JSON.stringify(data.token)
-                    ),
-                    window.location.reload(),
-                    (event.target.style.pointerEvents = "none"),
-                    setTimeout(() => {
-                      event.target.style.pointerEvents = "auto";
-                      displayProfil(false);
-                    }, 2000))
+                Object.keys(data) == "error"
+                  ? setValidationMessage(data.error)
+                  : (setValidationMessage(data.valid), navigate(0))
               );
             } else {
               setValidationMessage(
@@ -188,5 +199,8 @@ const ProfilComponent = ({ displayProfil, userData }) => {
     </Overlay>
   );
 };
-
+ProfilComponent.propTypes = {
+  userData: PropTypes.object,
+  displayProfil: PropTypes.bool,
+};
 export default ProfilComponent;

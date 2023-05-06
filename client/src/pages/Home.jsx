@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import heroImage from "../assets/images/heroImage.jpg";
 import Reserv from "./components/Reserv";
-import { query } from "../data/fetchAllData";
+import PropTypes from "prop-types";
 
 import {
   Wrapper,
@@ -9,7 +9,6 @@ import {
   ContextText,
   SectionPlats,
 } from "../assets/style/homeStyle";
-import Loading from "./Loading";
 
 const Home = ({ imagesApi }) => {
   const [res, setRes] = useState(false);
@@ -38,19 +37,17 @@ const Home = ({ imagesApi }) => {
           Venez à table !
         </p>
         <div className="imagesGalery">
-          {imagesApi.length > 0
-            ? imagesApi.map((images, id) => {
-                return (
-                  <div key={id}>
-                    <img src={images.lien} alt="ok" loading="lazy" />
-                    <span>
-                      <h1>{images.titre}</h1>
-                      <p>{images.description}</p>
-                    </span>
-                  </div>
-                );
-              })
-            : null}
+          {imagesApi.map((images, id) => {
+            return (
+              <div key={id}>
+                <img src={images.lien} alt="plat du chef" loading="lazy" />
+                <span>
+                  <h1>{images.titre}</h1>
+                  <p>{images.description}</p>
+                </span>
+              </div>
+            );
+          })}
         </div>
         <button className="btnReserve" onClick={() => setRes(true)}>
           Réservez une table
@@ -59,5 +56,9 @@ const Home = ({ imagesApi }) => {
     </Wrapper>
   );
 };
+
+Home.propTypes = {
+  imagesApi : PropTypes.array
+}
 
 export default Home;

@@ -1,4 +1,4 @@
-export const carteQuery = async () => {
+export const cardQuery = async () => {
   let fetching = fetch("/cardApi", {
     method: "POST",
     headers: {

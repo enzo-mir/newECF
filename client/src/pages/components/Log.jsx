@@ -8,6 +8,8 @@ import {
 import postCreateAccount from "../../data/postCreateAccount";
 import { postConnection } from "../../data/postConnection";
 import { Cross } from "../../assets/style/cross";
+import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 
 const Log = ({ displayPage, togglePage }) => {
   const [page, setPage] = useState(togglePage);
@@ -18,6 +20,7 @@ const Log = ({ displayPage, togglePage }) => {
   const [signinAlergy, setSigninAlergy] = useState();
   const [pwdConfirmation, setPwdConfirmation] = useState("");
   const [fromConfirmation, setFormConfirmation] = useState("");
+  const navigate = useNavigate();
 
   const [loginEmail, setLoginEmail] = useState();
   const [loginPassword, setLoginPassword] = useState();
@@ -43,10 +46,10 @@ const Log = ({ displayPage, togglePage }) => {
     let values = Object.values(obj);
     var nameRegex = new RegExp(/^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/);
     var emailRegex = new RegExp(
-      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/g
+      /^(([^<>()[\]\\.,;:\s@\\"]+(\.[^<>()[\]\\.,;:\s@\\"]+)*)|(\\".+\\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/g
     );
     var pwdRegex = new RegExp(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/);
-    var alergyRegex = nameRegex;
+    var alergyRegex = new RegExp(/^([a-z+A-Z\\,]+[a-z+A-Z])$/gm);
     var guestsRegex = new RegExp(/^([1-9])$/);
 
     if (nameRegex.test(values[0]) && values[0]) {
@@ -54,7 +57,7 @@ const Log = ({ displayPage, togglePage }) => {
         if (pwdConfirmation === null && values[2]) {
           if (pwdRegex.test(values[2]) && values[2]) {
             if (guestsRegex.test(values[3]) && values[3]) {
-              if (alergyRegex.test(values[4])) {
+              if (alergyRegex.test(values[4]) || !values[4]) {
                 postCreateAccount(
                   values[0],
                   values[1],
@@ -70,8 +73,8 @@ const Log = ({ displayPage, togglePage }) => {
                         : null,
                       setTimeout(() => {
                         postConnection(values[1], values[2]);
-                        location.reload();
-                      }, 2000))
+                        navigate(0);
+                      }, 1000))
                 );
               } else
                 setFormConfirmation(
@@ -97,14 +100,14 @@ const Log = ({ displayPage, togglePage }) => {
       );
   }
 
-  function submitLogin(email, password, event) {
+  function submitLogin(email, password) {
     postConnection(email, password).then(async (data) =>
       data.erreur
         ? setFormConfirmation(data.erreur)
         : (data.access == "admin"
             ? (window.location.href = "/admin")
             : data.access == "user"
-            ? window.location.reload()
+            ? navigate(0)
             : null,
           setFormConfirmation(""))
     );
@@ -237,7 +240,7 @@ const Log = ({ displayPage, togglePage }) => {
                   setLoginPassword("");
                 }}
               >
-                vous n'avez pas encore de compte ? créez un compte
+                vous n&#39;avez pas encore de compte ? créez un compte
               </p>
             </div>
           </>
@@ -245,6 +248,11 @@ const Log = ({ displayPage, togglePage }) => {
       </LogContainer>
     </Overlay>
   );
+};
+
+Log.propTypes = {
+  displayPage: PropTypes.bool,
+  togglePage: PropTypes.string,
 };
 
 export default Log;
