@@ -87,6 +87,7 @@ video {
   font-size: 100%;
   font: inherit;
   vertical-align: baseline;
+  scroll-behavior: smooth;
 }
 /* HTML5 display-role reset for older browsers */
 article,
@@ -130,15 +131,15 @@ table {
   --font-f-italian: "Italiana", serif;
   --font-size: clamp(13px, 1.5vw, 20px);
   --font-size-bigger: clamp(18px, 3vw, 30px);
-  --font-size-h1: clamp(20px, 7.5vw, 60px);
+  --font-size-h1: clamp(20px, 5vw, 50px);
   --font-size-reg: clamp(15px, 2.5vw, 25px);
   --font-size-little: clamp(13px, 2vw, 14px);
-  --primary-color: #ffebcc;
-  --primary-color-a50: hsla(36, 100%, 90%, 0.5);
-  --primary-color-a30: hsla(36, 100%, 90%, 0.3);
-  --darker-color: #906527;
-  --darker-color-a70: hsla(35, 57%, 36%, 0.7);
-  --darker-color-a30: hsla(35, 57%, 36%, 0.3);
+  --primary-color: rgb(255, 241, 221);
+  --primary-color-a50: rgba(255, 241, 221, 0.5);
+  --primary-color-a30: rgba(255, 241, 221, 0.3);
+  --darker-color: #9a815e;
+  --darker-color-a70: hsla(35, 32%, 58%, 0.7);
+  --darker-color-a30: hsla(35, 32%, 58%, 0.3);
   --color-whiteless: rgba(255, 255, 255, 0.5);
   --color-blackless: rgba(0, 0, 0, 0.5);
 }

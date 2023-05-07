@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import icon from "../../assets/images/icon.svg";
 import Log from "./Log";
 import {
@@ -17,12 +17,12 @@ const Header = ({ isConnected, data, hours, isAdmin }) => {
   const [profilPage, setProfilPage] = useState(false);
   const [res, setRes] = useState(false);
   const [togglePage, setTogglePage] = useState("");
-  const [userInfo, setUserInfo] = useState(data);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    setUserInfo(data);
-  }, [data]);
+    window.scrollTo(0, 0);
+  }, [location]);
 
   document.onmouseup = (e) => {
     let obj = document.querySelector("header");
@@ -39,7 +39,7 @@ const Header = ({ isConnected, data, hours, isAdmin }) => {
         <button
           onClick={() => {
             logout();
-            navigate("/")
+            navigate("/");
             navigate(0);
           }}
         >
@@ -101,7 +101,7 @@ const Header = ({ isConnected, data, hours, isAdmin }) => {
             </>
           ) : (
             <button id="profil" onClick={() => setProfilPage(true)}>
-              {userInfo ? userInfo.userName.charAt(0) : null}
+              {data ? data.userName.charAt(0) : null}
             </button>
           )}
         </div>
@@ -113,7 +113,7 @@ const Header = ({ isConnected, data, hours, isAdmin }) => {
     <>
       {logPage && <Log displayPage={setLogPage} togglePage={togglePage} />}
       {profilPage && (
-        <ProfilComponent displayProfil={setProfilPage} userData={userInfo} />
+        <ProfilComponent displayProfil={setProfilPage} userData={data} />
       )}
       {res && <Reserv res={setRes} userData={data} hours={hours} />}
 

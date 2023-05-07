@@ -6,87 +6,106 @@ const Wrapper = styled.main`
   display: flex;
   align-items: center;
   flex-direction: column;
-  row-gap: 10vh;
+  gap: 20vh;
 `;
 
 const HeroSection = styled.section`
   position: relative;
   width: 100%;
-  height: fit-content;
+  height: 100vh;
+  max-height: 100vh;
   min-height: 350px;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 20vh;
 
   & .headerPage {
     position: relative;
     width: 100%;
-    height: 60vh;
+    height: 100%;
     display: grid;
     place-items: center;
-    background-color: var(--darker-color-a70);
+    grid-template-columns: 1fr 1fr;
 
     & img {
-      position: absolute;
-      width: 100%;
       height: 100%;
+      width: 100%;
       z-index: -2;
       object-fit: cover;
       user-select: none;
+      filter: brightness(70%);
     }
-    & h1 {
-      font-size: var(--font-size-h1);
-      color: #fff;
-      border-radius: 10px;
-      padding: 1rem;
-      user-select: text;
+
+    & > aside {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      width: 100%;
+      height: 100%;
+      background: var(--primary-color);
+
+      & > * {
+        width: fit-content;
+      }
+
+      & h1 {
+        font-size: var(--font-size-h1);
+        user-select: text;
+      }
+
+      & h2 {
+        font-size: var(--font-size-reg);
+      }
+      button a {
+        color: white;
+        text-decoration: none;
+      }
     }
-  }
-`;
-
-const ContextText = styled.div`
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-
-  &::after {
-    position: absolute;
-    content: "";
-    width: 100%;
-    height: 50px;
-    background-color: var(--darker-color);
-    z-index: -1;
-  }
-
-  & p {
-    font-size: var(--font-size-bigger);
-    width: 60%;
-    border-radius: 10px;
-    text-align: center;
-    background-color: var(--primary-color);
-    line-height: 200%;
-    padding: 1.5em 1em;
   }
 `;
 
 const SectionPlats = styled.section`
   position: relative;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: repeat(2, 1fr);
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   row-gap: 10vh;
   width: clamp(300px, 80%, 1400px);
+
+  & .textContent {
+    scroll-margin-block-start: 150px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    gap: 5vw;
+    font-size: var(--font-size-reg);
+
+    & p {
+      width: 30%;
+      line-height: 150%;
+      padding: 2rem;
+
+      &:first-child {
+        background-color: var(--primary-color);
+      }
+      &:last-child {
+        background-color: var(--darker-color);
+        color: white;
+      }
+    }
+  }
+  & > button {
+    width: fit-content;
+  }
 
   & .imagesGalery {
     display: grid;
     width: 100%;
-    grid-area: 1 / 1 / 3 / 2;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 250px));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 200px));
     place-items: center;
     justify-content: center;
     margin-bottom: auto;
@@ -130,13 +149,13 @@ const SectionPlats = styled.section`
         font-size: clamp(5px, 1vw, 20px);
         color: transparent;
         transition: 0.15s ease-out;
-        font-size: var(--font-size);
+        font-size: var(--font-size-little);
         width: 100%;
       }
     }
     & img {
       width: 100%;
-      width: clamp(150px, 13vw, 250px);
+      width: clamp(150px, 13vw, 200px);
       aspect-ratio: 1/1;
       object-fit: cover;
       border-radius: 10px;
@@ -173,4 +192,4 @@ const SectionPlats = styled.section`
   }
 `;
 
-export { Wrapper, HeroSection, ContextText, SectionPlats };
+export { Wrapper, HeroSection, SectionPlats };

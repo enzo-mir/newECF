@@ -65,7 +65,7 @@ const Navigation = ({ cardQuery, allDataQuery }) => {
             </Route>
           )}
         </Routes>
-        <Footer hours={allDataQuery.data.heures} />
+        {isAdmin ? null : <Footer hours={allDataQuery.data.heures} />}
       </BrowserRouter>
       ;
     </>
