@@ -25,6 +25,7 @@ const Navigation = ({ cardQuery, allDataQuery }) => {
       <BrowserRouter>
         <Header
           isConnected={isConnected}
+          display={true}
           data={userData}
           hours={allDataQuery.data.heures}
           isAdmin={isAdmin}

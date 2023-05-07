@@ -313,5 +313,5 @@ export default function Reserv({ res, userData, hours }) {
 Reserv.propTypes = {
   res: PropTypes.func,
   userData: PropTypes.object,
-  hours: PropTypes.object,
+  hours: PropTypes.array,
 };

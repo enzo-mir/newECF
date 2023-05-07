@@ -1,5 +1,4 @@
-import "dotenv/config";
-import { v2 as cloudinary } from "cloudinary";
+let cloudinary = require("cloudinary").v2
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_NAME,
@@ -8,7 +7,7 @@ cloudinary.config({
     secure: true,
 });
 
-export default async function adminEdition(app) {
+module.exports = async function adminEdition(app) {
     app.post("/adminImageEdited", (req, res) => {
         let response = req.body;
         if (response.add == true) {

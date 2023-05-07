@@ -251,7 +251,7 @@ const Log = ({ displayPage, togglePage }) => {
 };
 
 Log.propTypes = {
-  displayPage: PropTypes.bool,
+  displayPage: PropTypes.func,
   togglePage: PropTypes.string,
 };
 

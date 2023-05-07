@@ -1,4 +1,4 @@
-export default async function dataApi(app) {
+module.exports = async function dataApi(app) {
     app.post("/dataApi", (req, res) => {
         app.mysql.query("SELECT * FROM `heures`", (error, heures) => {
             error ? console.log(error) : null;

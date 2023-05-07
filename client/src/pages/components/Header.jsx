@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import icon from "../../assets/images/icon.svg";
 import Log from "./Log";
 import {
@@ -10,6 +10,7 @@ import {
 import ProfilComponent from "./ProfilComponent";
 import Reserv from "./Reserv";
 import PropTypes from "prop-types";
+import logout from "../../data/logout";
 
 const Header = ({ isConnected, data, hours, isAdmin }) => {
   const [logPage, setLogPage] = useState(false);
@@ -17,6 +18,7 @@ const Header = ({ isConnected, data, hours, isAdmin }) => {
   const [res, setRes] = useState(false);
   const [togglePage, setTogglePage] = useState("");
   const [userInfo, setUserInfo] = useState(data);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setUserInfo(data);
@@ -34,7 +36,15 @@ const Header = ({ isConnected, data, hours, isAdmin }) => {
   const NavMenu = () => {
     return isAdmin ? (
       <HeaderContainer>
-        <Link to="/">Accueil</Link>
+        <button
+          onClick={() => {
+            logout();
+            navigate("/")
+            navigate(0);
+          }}
+        >
+          Déconnection
+        </button>
       </HeaderContainer>
     ) : (
       <HeaderContainer>
@@ -147,7 +157,7 @@ Header.propTypes = {
   isAdmin: PropTypes.bool,
   isConnected: PropTypes.bool,
   display: PropTypes.bool,
-  hours: PropTypes.object,
+  hours: PropTypes.array,
 };
 
 export default Header;

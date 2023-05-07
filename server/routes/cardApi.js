@@ -1,4 +1,4 @@
-export default async function cardApi(app) {
+module.exports = async function cardApi(app) {
     app.post("/cardApi", (req, res) => {
         app.mysql.query("SELECT * FROM `entree`", (error, entree) => {
             error ? console.log(error) : null;

@@ -1,14 +1,9 @@
-import "dotenv/config";
-import fastify from "fastify";
-import session from "@fastify/session";
-import fastifyCookie from "@fastify/cookie";
-import path from "path";
-import { fileURLToPath } from "url";
-import { fileRoutes } from "fastify-file-routes";
-import cors from "@fastify/cors";
-const __filename = fileURLToPath(import.meta.url);
+let fastify = require("fastify");
+let session = require("@fastify/session");
+let fastifyCookie = require("@fastify/cookie");
+const path = require("path");
+const cors = require("@fastify/cors");
 
-const __dirname = path.dirname(__filename);
 const app = fastify();
 app.register(fastifyCookie);
 app.register(cors, {
@@ -16,19 +11,8 @@ app.register(cors, {
     origin: "http://ecf2023juillet.uqkn2942.odns.fr/",
     methods: ["GET", "POST"],
 });
-/*  app.register(import("@fastify/static"), {
-    root: path.join(__dirname, "../ecf2023juillet.uqkn2942.odns.fr/client/dist"),
-});
-app.get("/", async (req, res) => {
-    res.sendFile(
-        path.join(
-            __dirname,
-            "../ecf2023juillet.uqkn2942.odns.fr/client/dist/index.html"
-        )
-    );
-});  */
 
-app.register(import("@fastify/mysql"), {
+app.register(require("@fastify/mysql"), {
     connectionString:
         "mysql://uqkn2942_enzmrg:5()Amg9709@enzomrg.com/uqkn2942_enzmrg",
 });
@@ -39,34 +23,22 @@ app.register(session, {
     cookie: { secure: false },
     expires: 8000000000,
 });
-app.register(import("./routes/dataApi.js"));
-app.register(import("./routes/cardApi.js"));
-app.register(import("./routes/authentification.js"));
-app.register(import("./routes/accountManagment.js"));
-app.register(import("./routes/adminEdition.js"));
-app.register(import("./routes/reservation.js"));
+app.register(require("./routes/dataApi.js"));
+app.register(require("./routes/cardApi.js"));
+app.register(require("./routes/authentification.js"));
+app.register(require("./routes/accountManagment.js"));
+app.register(require("./routes/adminEdition.js"));
+app.register(require("./routes/reservation.js"));
 
-app.register(import('@fastify/static'), {
+/* app.register(require("@fastify/static"), {
     root: path.join(__dirname, "../client/dist"),
 });
 
 app.get("/:", (req, res) => {
     res.sendFile("index.html");
-});
-
-/* if (typeof PhusionPassenger !== "undefined") {
-    PhusionPassenger.configure({ autoInstall: false });
-} */
-
-/* if (typeof PhusionPassenger !== "undefined") {
-    app.listen("passenger");
+}); */
+if (typeof PhusionPassenger !== "undefined") {
+    app.listen({ path: "passenger", host: "127.0.0.1" });
 } else {
+    app.listen({ port: 3000 });
 }
- */
-app.listen(process.env.PORT || 3000, "localhost", (err) => {
-    if (err) {
-        app.log.error(err);
-        process.exit(1);
-    }
-    console.log(`server running at ${app.server.address().port}`);
-});

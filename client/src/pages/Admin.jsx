@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import editBtn from "../assets/images/edit_btn.png";
 import adminHoursPost from "../data/adminHoursPost";
 import AdminEditImages from "./components/admin/AdminEditImages";
@@ -8,7 +8,6 @@ import {
   CardContainer,
   Wrapper,
 } from "../assets/style/adminStyle";
-import logout from "../data/logout";
 import adminImageDeleted from "../data/adminImageDeleted";
 import CardEdition from "./components/admin/CardEdition";
 import PropTypes from "prop-types";
@@ -28,13 +27,6 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
   const [errorHour, setErrorHour] = useState(false);
   const imageTitleDetails = useRef();
   const imageDescDetails = useRef();
-
-  useEffect(() => {
-    return () => {
-      logout();
-      location.reload();
-    };
-  }, []);
 
   function editingHours(event, text, day, time) {
     let element = document.createElement("input");

@@ -1,4 +1,4 @@
-export default async function accountManagment(app) {
+module.exports = async function accountManagment(app) {
     app.post("/deleteAccount", (req, res) => {
         req.session.destroy();
         let response = req.body;
@@ -8,7 +8,12 @@ export default async function accountManagment(app) {
                 if (success) {
                     res.send({ success: "success" }).status(200);
                 } else {
-                    res.send({ erreur: "Un problème est survenus lors de la suppression du profil", }).status(400);
+                    res
+                        .send({
+                            erreur:
+                                "Un problème est survenus lors de la suppression du profil",
+                        })
+                        .status(400);
                 }
             }
         );
@@ -39,7 +44,40 @@ export default async function accountManagment(app) {
             }
         );
     });
-    app.post("/logout", (req, res) => {
-        req.session.destroy();
+
+    app.post("/updateProfil", (req, res) => {
+        let name = req.body.nom;
+        let email = req.body.email;
+        let guests = req.body.convives;
+        let alergy = req.body.alergies;
+        let pwd = req.body.mdp;
+        let oldpwd = req.body.oldPassword;
+        let oldEmail = req.body.oldEmail;
+
+        app.mysql.query(
+            "UPDATE `connexion` SET `userName` = ?,`email` = ?,`password` = ?,`convive` = ?,`alergie` = ? WHERE email = ? AND password = ?",
+            [name, email, pwd, guests, alergy, oldEmail, oldpwd],
+            (error, success) => {
+                if (success) {
+                    app.mysql.query(
+                        "SELECT * from `connexion` WHERE `email` = ? AND `password` = ?",
+                        [email, pwd],
+                        (err, valid) => {
+                            if (valid.length) {
+                                req.session.user = valid;
+                                res.send({ valid: "Profil mis à jour" });
+                            } else {
+                                res.send({ error: "erreur lors de la mise à jour du profil" });
+                            }
+                        }
+                    );
+                } else {
+                    res.send({ error: "erreur lors de la mise à jour du profil" });
+                }
+            }
+        );
     });
-}
+    app.post("/logout", (req, res) => {
+        res.send(req.session.destroy());
+    });
+};

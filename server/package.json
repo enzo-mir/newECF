@@ -6,7 +6,6 @@
   "scripts": {
     "start": "node server.js"
   },
-  "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -16,12 +15,8 @@
     "@fastify/mysql": "^4.1.0",
     "@fastify/session": "^10.3.0",
     "@fastify/static": "^6.10.1",
-    "@fastify/vite": "^4.0.0",
     "cloudinary": "^1.36.4",
-    "dotenv": "^16.0.3",
     "fastify": "^4.17.0",
-    "fastify-file-routes": "^1.1.2",
-    "path": "^0.12.7",
-    "vite": "^4.3.4"
+    "path": "^0.12.7"
   }
 }

@@ -1,4 +1,4 @@
-export default async function authentification(app) {
+module.exports = async function authentification(app) {
     app.post("/authLogin", (req, res) => {
         app.mysql.query(
             `SELECT * FROM connexion WHERE email = "${req.body.email}" AND password = "${req.body.mdp}"`,
