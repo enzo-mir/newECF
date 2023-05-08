@@ -225,85 +225,12 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
           <h1>Carte du restaurant</h1>
           <h2>Entrées</h2>
           <div className="content">
-            {entree ? (
-              <>
-                <div className="seul">
-                  <h2>Seul</h2>
-                  {entree.map((food, id) => {
-                    return !food.partage ? (
-                      <div key={id}>
-                        <h3>{food.nom}</h3>
-                        <p>{food.description}</p>
-                        <p>{food.prix}€</p>
-                        <button onClick={(e) => editableCard(e)}>
-                          <img src={editBtn} alt="edit btn" />
-                        </button>
-                      </div>
-                    ) : null;
-                  })}
-                </div>
-                <div className="partage">
-                  <h2>Partager</h2>
-                  {entree.map((food, id) => {
-                    return food.partage ? (
-                      <div key={id}>
-                        <h3>{food.nom}</h3>
-                        <p>{food.description}</p>
-                        <p>{food.prix}€</p>
-                        <button onClick={(e) => editableCard(e)}>
-                          <img src={editBtn} alt="edit btn" />
-                        </button>
-                      </div>
-                    ) : null;
-                  })}
-                </div>
-              </>
-            ) : null}
-          </div>
-          <h2>Plats</h2>
-          <div className="content">
-            {plat ? (
-              <>
-                <div className="seul">
-                  <h2>Seul</h2>
-                  {plat.map((food, id) => {
-                    return !food.partage ? (
-                      <div key={id}>
-                        <h3>{food.nom}</h3>
-                        <p>{food.description}</p>
-                        <p>{food.prix}€</p>
-                        <button onClick={(e) => editableCard(e)}>
-                          <img src={editBtn} alt="edit btn" />
-                        </button>
-                      </div>
-                    ) : null;
-                  })}
-                </div>
-                <div className="partage">
-                  <h2>Partager</h2>
-                  {plat.map((food, id) => {
-                    return food.partage ? (
-                      <div key={id}>
-                        <h3>{food.nom}</h3>
-                        <p>{food.description}</p>
-                        <p>{food.prix}€</p>
-                        <button onClick={(e) => editableCard(e)}>
-                          <img src={editBtn} alt="edit btn" />
-                        </button>
-                      </div>
-                    ) : null;
-                  })}
-                </div>
-              </>
-            ) : null}
-          </div>
-          <h2>Desserts</h2>
-          <div className="content">
-            {dessert ? (
-              <div>
-                {dessert.map((food, id) => {
-                  return (
-                    <div key={id} className="dessert">
+            <>
+              <div className="seul">
+                <h2>Seul</h2>
+                {entree.map((food, id) => {
+                  return !food.partage ? (
+                    <div key={id}>
                       <h3>{food.nom}</h3>
                       <p>{food.description}</p>
                       <p>{food.prix}€</p>
@@ -311,32 +238,95 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
                         <img src={editBtn} alt="edit btn" />
                       </button>
                     </div>
-                  );
+                  ) : null;
                 })}
               </div>
-            ) : null}
-          </div>
-          {menu ? (
-            <>
-              <h2>Menus</h2>
-              <div className="content">
-                <div>
-                  {menu.map((food, id) => {
-                    return (
-                      <div key={id} className="menu">
-                        <h3>{food.nom}</h3>
-                        <p>{food.description}</p>
-                        <p>{food.formule}</p>
-                        <button onClick={(e) => editableCard(e)}>
-                          <img src={editBtn} alt="edit btn" />
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
+              <div className="partage">
+                <h2>Partager</h2>
+                {entree.map((food, id) => {
+                  return food.partage ? (
+                    <div key={id}>
+                      <h3>{food.nom}</h3>
+                      <p>{food.description}</p>
+                      <p>{food.prix}€</p>
+                      <button onClick={(e) => editableCard(e)}>
+                        <img src={editBtn} alt="edit btn" />
+                      </button>
+                    </div>
+                  ) : null;
+                })}
               </div>
             </>
-          ) : null}
+          </div>
+          <h2>Plats</h2>
+          <div className="content">
+            <>
+              <div className="seul">
+                <h2>Seul</h2>
+                {plat.map((food, id) => {
+                  return !food.partage ? (
+                    <div key={id}>
+                      <h3>{food.nom}</h3>
+                      <p>{food.description}</p>
+                      <p>{food.prix}€</p>
+                      <button onClick={(e) => editableCard(e)}>
+                        <img src={editBtn} alt="edit btn" />
+                      </button>
+                    </div>
+                  ) : null;
+                })}
+              </div>
+              <div className="partage">
+                <h2>Partager</h2>
+                {plat.map((food, id) => {
+                  return food.partage ? (
+                    <div key={id}>
+                      <h3>{food.nom}</h3>
+                      <p>{food.description}</p>
+                      <p>{food.prix}€</p>
+                      <button onClick={(e) => editableCard(e)}>
+                        <img src={editBtn} alt="edit btn" />
+                      </button>
+                    </div>
+                  ) : null;
+                })}
+              </div>
+            </>
+          </div>
+          <h2>Desserts</h2>
+          <div className="content">
+            <div>
+              {dessert.map((food, id) => {
+                return (
+                  <div key={id} className="dessert">
+                    <h3>{food.nom}</h3>
+                    <p>{food.description}</p>
+                    <p>{food.prix}€</p>
+                    <button onClick={(e) => editableCard(e)}>
+                      <img src={editBtn} alt="edit btn" />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          <h2>Menus</h2>
+          <div className="content">
+            <div>
+              {menu.map((food, id) => {
+                return (
+                  <div key={id} className="menu">
+                    <h3>{food.nom}</h3>
+                    <p>{food.description}</p>
+                    <p>{food.formule}</p>
+                    <button onClick={(e) => editableCard(e)}>
+                      <img src={editBtn} alt="edit btn" />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </CardContainer>
         <article>
           <h1>

@@ -27,6 +27,10 @@ const HeroSection = styled.section`
     place-items: center;
     grid-template-columns: 1fr 1fr;
 
+    @media screen and (max-width: 800px) {
+      grid-template-columns: 1fr;
+    }
+
     & img {
       height: 100%;
       width: 100%;
@@ -77,17 +81,28 @@ const SectionPlats = styled.section`
   & .textContent {
     scroll-margin-block-start: 150px;
     position: relative;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     width: fit-content;
     gap: 5vw;
-    font-size: var(--font-size-reg);
+    font-size: var(--font-size);
+
+    @media screen and (max-width: 800px) {
+      flex-direction: column;
+    }
 
     & p {
       width: 30%;
       line-height: 150%;
       padding: 2rem;
+      height: 200px;
+
+      @media screen and (max-width: 800px) {
+        width: 70%;
+        height: clamp(100px,15vh,150px);
+      }
 
       &:first-child {
         background-color: var(--primary-color);
