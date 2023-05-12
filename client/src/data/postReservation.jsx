@@ -7,7 +7,7 @@ const postReservation = (
   allergies,
   timeJourney
 ) => {
-  let post = fetch("/reservation", {
+  return fetch("/reservation", {
     method: "POST",
     headers: {
       "Content-Type": "application/json; charset=utf-8",
@@ -24,7 +24,6 @@ const postReservation = (
       timeJourney: timeJourney,
     }),
   }).then((response) => response.json());
-  return post;
 };
 
 export default postReservation;

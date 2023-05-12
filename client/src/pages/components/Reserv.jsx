@@ -10,14 +10,14 @@ import {
 import { Cross } from "../../assets/style/cross";
 import PropTypes from "prop-types";
 
-export default function Reserv({ res, userData, hours }) {
+export default function Reserv({ res, userData, hours, setReservationData }) {
   const [date, setDate] = useState(null);
-  const [guests, setGuests] = useState(1);
-  const [email, setEmail] = useState();
-  const [name, setName] = useState();
+  const [guests, setGuests] = useState(userData? userData.convive : 1);
+  const [email, setEmail] = useState(userData? userData.email : "");
+  const [name, setName] = useState(userData? userData.userName : "");
   const [resError, setResError] = useState("");
   const [showAllergy, setShowAllergy] = useState(false);
-  const [alergy, setAlergy] = useState();
+  const [alergy, setAlergy] = useState(userData? userData.alergie : "");
   const [DTable, setDTable] = useState([]);
   const [LTable, setLTable] = useState([]);
 
@@ -156,18 +156,16 @@ export default function Reserv({ res, userData, hours }) {
                   hourTargeted,
                   alergy,
                   time
-                ).then(async (data) => {
-                  await data;
-                  if (Object.keys(data) == "error") {
-                    setResError(data.error);
-                  } else {
-                    setResError("Réservation validé !");
-                    e.target.style.pointerEvents = "none";
-                    setTimeout(() => {
-                      e.target.style.pointerEvents = "auto";
-                      res(false);
-                    }, 3500);
-                  }
+                ).then((data) => {
+                  Object.keys(data) == "error"
+                    ? setResError(data.error)
+                    : (setResError("Réservation validé !"),
+                      data.valid ? setReservationData(data.valid) : null,
+                      (e.target.style.pointerEvents = "none"),
+                      setTimeout(() => {
+                        e.target.style.pointerEvents = "auto";
+                        res(false);
+                      }, 3500));
                 });
               } else {
                 postReservation(
@@ -179,17 +177,15 @@ export default function Reserv({ res, userData, hours }) {
                   "",
                   time
                 ).then(async (data) => {
-                  await data;
-                  if (Object.keys(data) == "error") {
-                    setResError(data.error);
-                  } else {
-                    setResError("Réservation validé !");
-                    e.target.style.pointerEvents = "none";
-                    setTimeout(() => {
-                      e.target.style.pointerEvents = "auto";
-                      res(false);
-                    }, 3500);
-                  }
+                  Object.keys(data) == "error"
+                    ? setResError(data.error)
+                    : (setResError("Réservation validé !"),
+                      data.valid ? setReservationData(data.valid) : null,
+                      (e.target.style.pointerEvents = "none"),
+                      setTimeout(() => {
+                        e.target.style.pointerEvents = "auto";
+                        res(false);
+                      }, 2500));
                 });
               }
             } else setResError("Choisissez une heure de réservation");
@@ -314,4 +310,5 @@ Reserv.propTypes = {
   res: PropTypes.func,
   userData: PropTypes.object,
   hours: PropTypes.array,
+  setReservationData: PropTypes.func,
 };

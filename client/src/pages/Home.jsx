@@ -4,12 +4,19 @@ import PropTypes from "prop-types";
 
 import { Wrapper, HeroSection, SectionPlats } from "../assets/style/homeStyle";
 
-const Home = ({ imagesApi }) => {
+const Home = ({ imagesApi, userdata, hours, setReservation }) => {
   const [res, setRes] = useState(false);
 
   return (
     <Wrapper>
-      {res && <Reserv res={setRes} />}
+      {res && (
+        <Reserv
+          res={setRes}
+          userData={userdata}
+          hours={hours}
+          setReservationData={setReservation}
+        />
+      )}
       <HeroSection>
         <div className="headerPage">
           <img
@@ -64,6 +71,9 @@ const Home = ({ imagesApi }) => {
 
 Home.propTypes = {
   imagesApi: PropTypes.array,
+  userdata: PropTypes.object,
+  hours: PropTypes.array,
+  setReservation: PropTypes.func,
 };
 
 export default Home;

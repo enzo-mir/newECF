@@ -12,8 +12,7 @@ const Wrapper = styled.main`
 const HeroSection = styled.section`
   position: relative;
   width: 100%;
-  height: 100vh;
-  max-height: 100vh;
+  height: 100svh;
   min-height: 350px;
   display: flex;
   justify-content: center;
@@ -27,10 +26,7 @@ const HeroSection = styled.section`
     place-items: center;
     grid-template-columns: 1fr 1fr;
 
-    @media screen and (max-width: 800px) {
-      grid-template-columns: 1fr;
-    }
-
+    
     & img {
       height: 100%;
       width: 100%;
@@ -38,6 +34,12 @@ const HeroSection = styled.section`
       object-fit: cover;
       user-select: none;
       filter: brightness(70%);
+    }
+    
+    @media screen and (max-width: 800px) {
+      grid-template-columns: 1fr;
+      grid-template-rows: 70% 1fr;
+     
     }
 
     & > aside {

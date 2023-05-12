@@ -4,12 +4,18 @@ import { Wrapper } from "../../assets/style/footerStyle";
 import Reserv from "./Reserv";
 import PropTypes from "prop-types";
 
-const Footer = ({ hours }) => {
+const Footer = ({ hours, data, setReservation }) => {
   const [res, setRes] = useState(false);
 
   return (
     <>
-      {res && <Reserv res={setRes} />}
+      {res && (
+        <Reserv
+          res={setRes}
+          userData={data}
+          setReservationData={setReservation}
+        />
+      )}
       <Wrapper>
         <table id="horaires">
           <thead>
@@ -52,6 +58,8 @@ const Footer = ({ hours }) => {
 
 Footer.propTypes = {
   hours: PropTypes.array,
+  setReservation: PropTypes.func,
+  data: PropTypes.object,
 };
 
 export default Footer;

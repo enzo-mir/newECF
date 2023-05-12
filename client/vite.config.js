@@ -62,6 +62,10 @@ export default defineConfig({
         target: "http://localhost:3000/",
         ws: true,
       },
+      "/deleteReservation": {
+        target: "http://localhost:3000/",
+        ws: true,
+      },
     },
   },
 });

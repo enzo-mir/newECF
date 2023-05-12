@@ -30,13 +30,13 @@ app.register(require("./routes/accountManagment.js"));
 app.register(require("./routes/adminEdition.js"));
 app.register(require("./routes/reservation.js"));
 
-/* app.register(require("@fastify/static"), {
-    root: path.join(__dirname, "../client/dist"),
+app.register(require("@fastify/static"), {
+    root: path.join(__dirname, "./client/dist"),
 });
 
 app.get("/:", (req, res) => {
     res.sendFile("index.html");
-}); */
+});
 if (typeof PhusionPassenger !== "undefined") {
     app.listen({ path: "passenger", host: "127.0.0.1" });
 } else {

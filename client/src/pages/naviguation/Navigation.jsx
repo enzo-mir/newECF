@@ -14,13 +14,14 @@ const Navigation = ({ cardQuery, allDataQuery }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [userData, setUserData] = useState(null);
-
+  const [currentReserv, setCurrentReserv] = useState(null);
   return (
     <>
       <Connect
         isConnected={setIsConnected}
         isAdmin={setIsAdmin}
         setData={setUserData}
+        setReservation={setCurrentReserv}
       />
       <BrowserRouter>
         <Header
@@ -29,12 +30,20 @@ const Navigation = ({ cardQuery, allDataQuery }) => {
           data={userData}
           hours={allDataQuery.data.heures}
           isAdmin={isAdmin}
+          reservations={currentReserv}
         />
         <Routes>
           <Route path="*" element={<UndifinedRoute />} />
           <Route
             path="/"
-            element={<Home imagesApi={allDataQuery.data.image} />}
+            element={
+              <Home
+                imagesApi={allDataQuery.data.image}
+                userdata={userData}
+                hours={allDataQuery.data.heures}
+                setReservation={setCurrentReserv}
+              />
+            }
           />
           <Route
             path="/carte"
@@ -65,7 +74,13 @@ const Navigation = ({ cardQuery, allDataQuery }) => {
             </Route>
           )}
         </Routes>
-        {isAdmin ? null : <Footer hours={allDataQuery.data.heures} />}
+        {isAdmin ? null : (
+          <Footer
+            hours={allDataQuery.data.heures}
+            data={userData}
+            setReservation={setCurrentReserv}
+          />
+        )}
       </BrowserRouter>
       ;
     </>

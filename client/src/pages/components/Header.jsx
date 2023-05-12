@@ -11,15 +11,20 @@ import ProfilComponent from "./ProfilComponent";
 import Reserv from "./Reserv";
 import PropTypes from "prop-types";
 import logout from "../../data/logout";
+import PopReservation from "./PopReservation";
 
-const Header = ({ isConnected, data, hours, isAdmin }) => {
+const Header = ({ isConnected, data, hours, isAdmin, reservations }) => {
   const [logPage, setLogPage] = useState(false);
   const [profilPage, setProfilPage] = useState(false);
   const [res, setRes] = useState(false);
   const [togglePage, setTogglePage] = useState("");
+  const [displayModal, setDisplayModal] = useState();
+  const [dataReservation, setDataReservation] = useState(reservations);
   const navigate = useNavigate();
   const location = useLocation();
-
+  useEffect(() => {
+    setDataReservation(reservations);
+  }, [reservations]);
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location]);
@@ -99,6 +104,18 @@ const Header = ({ isConnected, data, hours, isAdmin }) => {
                 Connexion
               </button>
             </>
+          ) : reservations ? (
+            <>
+              <button
+                className="reservations"
+                onClick={() => setDisplayModal(true)}
+              >
+                {dataReservation ? dataReservation.length : reservations.length}
+              </button>
+              <button id="profil" onClick={() => setProfilPage(true)}>
+                {data ? data.userName.charAt(0) : null}
+              </button>
+            </>
           ) : (
             <button id="profil" onClick={() => setProfilPage(true)}>
               {data ? data.userName.charAt(0) : null}
@@ -111,11 +128,20 @@ const Header = ({ isConnected, data, hours, isAdmin }) => {
 
   return (
     <>
-      {logPage && <Log displayPage={setLogPage} togglePage={togglePage} />}
-      {profilPage && (
+      {logPage ? (
+        <Log displayPage={setLogPage} togglePage={togglePage} />
+      ) : null}
+      {profilPage ? (
         <ProfilComponent displayProfil={setProfilPage} userData={data} />
-      )}
-      {res && <Reserv res={setRes} userData={data} hours={hours} />}
+      ) : null}
+      {res ? <Reserv res={setRes} userData={data} hours={hours} setReservationData={setDataReservation} /> : null}
+      {displayModal ? (
+        <PopReservation
+          data={dataReservation || reservations}
+          setDisplay={setDisplayModal}
+          setData={setDataReservation}
+        />
+      ) : null}
 
       <Wrapper>
         <div className="imgContainer">
@@ -158,6 +184,7 @@ Header.propTypes = {
   isConnected: PropTypes.bool,
   display: PropTypes.bool,
   hours: PropTypes.array,
+  reservations: PropTypes.array,
 };
 
 export default Header;

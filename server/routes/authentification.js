@@ -23,10 +23,32 @@ module.exports = async function authentification(app) {
     app.get("/auth", (req, res) => {
         if (req.session.user) {
             let data = req.session.user[0];
-            res.send({ isLogged: true, type: "user", userdata: data });
+            app.mysql.query(
+                "SELECT `convive`,`date`,`heures`,`email` FROM `reserver` WHERE email = ?",
+                [data.email],
+                (err, success) => {
+                    if (success.length) {
+                        let tableReserv = [];
+                        success.map((elem) => tableReserv.push(elem));
+                        res.send({
+                            isLogged: true,
+                            type: "user",
+                            userdata: data,
+                            currentReservation: tableReserv,
+                        });
+                    } else {
+                        res.send({
+                            isLogged: true,
+                            type: "user",
+                            userdata: data,
+                            currentReservation: [],
+                        });
+                    }
+                }
+            );
         }
         if (req.session.admin) {
             res.send({ isLogged: true, type: "admin", userdata: null });
         }
     });
-}
+};

@@ -10,17 +10,16 @@ const Wrapper = styled.header`
   z-index: 50;
 
   & .imgContainer {
-    padding: 1em;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
     & img {
-      height: 7vh;
+      height: clamp(40px, 5vh, 100px);
     }
   }
 
   @media screen and (max-width: 600px) {
     height: auto;
-    & .imgContainer {
-      padding: 0.7em 0.5em;
-    }
   }
 `;
 const BtnMenu = styled.span`
@@ -28,7 +27,7 @@ const BtnMenu = styled.span`
   top: 50%;
   transform: translateY(-50%);
   display: none;
-  height: 4vh;
+  height: 3vh;
   aspect-ratio: 1/1;
   background-image: url("${hamburgerBtn}");
   background-size: contain;
@@ -89,18 +88,43 @@ const HeaderContainer = styled.div`
   }
 
   & #profil {
-    width: 75px;
-    height: 75px;
+    height: clamp(40px, 7vh, 80px);
+    aspect-ratio: 1/1;
     border-radius: 50%;
     font-size: var(--font-size-bigger);
   }
 
   & .profil {
+    position: relative;
     margin-left: auto;
     display: flex;
+    align-items: center;
     justify-content: center;
     column-gap: 2vw;
     padding-inline: 1em;
+
+    & .reservations {
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      border: 3px solid var(--darker-color);
+      color: white;
+      font-weight: 600;
+      font-size: var(--font-size-little);
+      height: clamp(30px, 4vh, 100px);
+      aspect-ratio: 1/1;
+      z-index: 50;
+      background-color: var(--darker-color-a70);
+      padding: 0;
+      &:hover {
+        background-color: var(--darker-color);
+      }
+
+      @media screen and (max-width: 600px) {
+        width: 30px;
+        height: 30px;
+      }
+    }
   }
 
   @media screen and (max-width: 600px) {
@@ -120,6 +144,10 @@ const HeaderContainer = styled.div`
       gap: 25px;
       & .profil:has(button) {
         gap: 25px;
+
+        :has(.reservations) {
+          flex-direction: column-reverse;
+        }
       }
     }
 
