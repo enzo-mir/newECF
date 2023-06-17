@@ -65,7 +65,7 @@ module.exports = async function accountManagment(app) {
                         (err, valid) => {
                             if (valid.length) {
                                 req.session.user = valid;
-                                res.send({ valid: "Profil mis à jour" });
+                                res.send({ valid: "Profil mis à jour", data: valid[0] });
                             } else {
                                 res.send({ error: "erreur lors de la mise à jour du profil" });
                             }
@@ -78,6 +78,7 @@ module.exports = async function accountManagment(app) {
         );
     });
     app.post("/logout", (req, res) => {
-        res.send(req.session.destroy());
+        req.session.destroy();
+        res.clearCookie("sessionId").send({ message: "no session" });
     });
 };

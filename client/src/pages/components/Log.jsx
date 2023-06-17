@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Overlay } from "../../assets/style/overlay";
 import {
   LogContainer,
@@ -10,6 +10,7 @@ import { postConnection } from "../../data/postConnection";
 import { Cross } from "../../assets/style/cross";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
+import { connectStore } from "../../data/stores/connect.store";
 
 const Log = ({ displayPage, togglePage }) => {
   const [page, setPage] = useState(togglePage);
@@ -20,19 +21,12 @@ const Log = ({ displayPage, togglePage }) => {
   const [signinAlergy, setSigninAlergy] = useState();
   const [pwdConfirmation, setPwdConfirmation] = useState("");
   const [fromConfirmation, setFormConfirmation] = useState("");
+  const setAdmin = connectStore((state) => state.setConnectedAdmin);
   const navigate = useNavigate();
 
   const [loginEmail, setLoginEmail] = useState();
   const [loginPassword, setLoginPassword] = useState();
   const [loginConfirmation, setLoginConfirmation] = useState("");
-
-  useEffect(() => {
-    return () => {
-      document.body.removeAttribute("style");
-    };
-  }, []);
-
-  document.body.style.overflow = "hidden";
 
   let signinData = {
     signinName,
@@ -103,13 +97,13 @@ const Log = ({ displayPage, togglePage }) => {
   function submitLogin(email, password) {
     postConnection(email, password).then(async (data) =>
       data.erreur
-        ? setFormConfirmation(data.erreur)
+        ? setLoginConfirmation(data.erreur)
         : (data.access == "admin"
-            ? (window.location.href = "/admin")
+            ? (navigate("/admin"), setAdmin(true), displayPage(false))
             : data.access == "user"
             ? navigate(0)
             : null,
-          setFormConfirmation(""))
+          setLoginConfirmation(""))
     );
   }
 
@@ -119,6 +113,7 @@ const Log = ({ displayPage, togglePage }) => {
       if (currentPage === "log") submitLogin(loginEmail, loginPassword, null);
     }
   }
+
   return (
     <Overlay onClick={() => displayPage(false)}>
       <LogContainer onClick={(e) => e.stopPropagation()}>
@@ -127,60 +122,64 @@ const Log = ({ displayPage, togglePage }) => {
           <>
             <h1>Inscrivez-vous</h1>
             {fromConfirmation ? <p>{fromConfirmation}</p> : null}
-            <ContentSignIn onKeyUp={(e) => contentLoaded(e, "sign")}>
-              <div className="profil">
-                <input
-                  type="text"
-                  placeholder="nom"
-                  autoComplete="family-name"
-                  onChange={(e) => setSigninName(e.target.value)}
-                />
-                <input
-                  type="email"
-                  placeholder="adresse e-mail"
-                  autoComplete="email"
-                  onChange={(e) => setSigninEmail(e.target.value)}
-                />
-              </div>
-              <div className="password">
-                <input
-                  type="password"
-                  placeholder="mot de passe"
-                  onChange={(e) => {
-                    setSigninPassword(e.target.value);
-                    e.target.value !== e.target.parentNode.children[1].value
-                      ? setPwdConfirmation(
-                          "le mot de passe et la confiramtion du mot de passe ne correspondent pas"
-                        )
-                      : setPwdConfirmation(null);
-                  }}
-                />
-                <input
-                  type="password"
-                  placeholder="confirmation mot de passe"
-                  onChange={(e) => {
-                    e.target.value !== e.target.parentNode.firstChild.value
-                      ? setPwdConfirmation(
-                          "le mot de passe et la confiramtion du mot de passe ne correspondent pas"
-                        )
-                      : setPwdConfirmation(null);
-                  }}
-                />
-              </div>
-              <div className="adds">
-                <input
-                  type="number"
-                  min="1"
-                  max="9"
-                  placeholder="convives par défaut (1-9)"
-                  onChange={(e) => setSigninGuests(e.target.value)}
-                />
-                <input
-                  type="text"
-                  placeholder="alergies (ex : tomates, carotte)"
-                  onChange={(e) => setSigninAlergy(e.target.value)}
-                />
-              </div>
+            <ContentSignIn onKeyDown={(e) => contentLoaded(e, "sign")}>
+              <form>
+                <div className="profil">
+                  <input
+                    type="text"
+                    placeholder="nom"
+                    autoComplete="family-name"
+                    onChange={(e) => setSigninName(e.target.value)}
+                  />
+                  <input
+                    type="email"
+                    placeholder="adresse e-mail"
+                    autoComplete="email"
+                    onChange={(e) => setSigninEmail(e.target.value)}
+                  />
+                </div>
+                <div className="password">
+                  <input
+                    type="password"
+                    placeholder="mot de passe"
+                    autoComplete="new-password"
+                    onChange={(e) => {
+                      setSigninPassword(e.target.value);
+                      e.target.value !== e.target.parentNode.children[1].value
+                        ? setPwdConfirmation(
+                            "le mot de passe et la confiramtion du mot de passe ne correspondent pas"
+                          )
+                        : setPwdConfirmation(null);
+                    }}
+                  />
+                  <input
+                    type="password"
+                    autoComplete="new-password"
+                    placeholder="confirmation mot de passe"
+                    onChange={(e) => {
+                      e.target.value !== e.target.parentNode.firstChild.value
+                        ? setPwdConfirmation(
+                            "le mot de passe et la confiramtion du mot de passe ne correspondent pas"
+                          )
+                        : setPwdConfirmation(null);
+                    }}
+                  />
+                </div>
+                <div className="adds">
+                  <input
+                    type="number"
+                    min="1"
+                    max="9"
+                    placeholder="convives par défaut (1-9)"
+                    onChange={(e) => setSigninGuests(e.target.value)}
+                  />
+                  <input
+                    type="text"
+                    placeholder="alergies (ex : tomates, carotte)"
+                    onChange={(e) => setSigninAlergy(e.target.value)}
+                  />
+                </div>
+              </form>
             </ContentSignIn>
             <div className="ctaLog">
               <button onClick={(e) => submitSignIn(signinData, e)}>

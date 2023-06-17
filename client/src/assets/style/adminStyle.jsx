@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import editBtn from "../images/edit_btn.png"
 const EditCardContainer = styled.div`
   position: absolute;
   display: grid;
@@ -184,10 +185,78 @@ const Wrapper = styled.main`
   }
 `;
 
+const ContainerWrapperEditImage = styled.div`
+  position: absolute;
+  display: grid;
+  place-items: center;
+  padding-block: 50px;
+  width: 1000px;
+  min-height: 60vh;
+  max-width: 100%;
+  z-index: 150;
+  background-color: #fff;
+  font-size: var(--font-size);
+  & label {
+    position: relative;
+    z-index: -1;
+
+    .addImageCase {
+      width: clamp(150px, 13vw, 200px);
+      aspect-ratio: 1/1;
+      border-radius: 10px;
+      transition: 0.15s ease-out;
+      background-size: cover !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: url(${editBtn});
+      background-repeat: no-repeat;
+      width: 30px;
+      height: 30px;
+      opacity: 0;
+      transition: 0.15s ease-out;
+      z-index: 1;
+    }
+    &:hover {
+      cursor: pointer;
+      & img {
+        filter: brightness(50%);
+      }
+
+      &::after {
+        opacity: 1;
+      }
+    }
+  }
+
+  & img {
+    width: clamp(150px, 13vw, 200px);
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    border-radius: 10px;
+    transition: 0.15s ease-out;
+  }
+  & input {
+    font-size: var(--font-size);
+    width: 75%;
+    &[type="file"] {
+      display: none;
+    }
+  }
+`;
+
 export {
   EditCardContainer,
   HoursContainer,
   ImgWrapper,
   CardContainer,
   Wrapper,
+  ContainerWrapperEditImage,
 };

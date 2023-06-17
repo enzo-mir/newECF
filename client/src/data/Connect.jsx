@@ -1,25 +1,36 @@
 import { useEffect } from "react";
+import { connectStore, userDataStore } from "./stores/connect.store";
 
-export default function Connect({
-  isConnected,
-  isAdmin,
-  setData,
-  setReservation,
-}) {
+export default function Connect() {
+  const setConnectedUser = connectStore((state) => state.setConnectedUser);
+  const setUserData = userDataStore((state) => state.setUserData);
+  const setCurrentReservation = userDataStore(
+    (state) => state.setCurrentReservation
+  );
+
   useEffect(() => {
-    fetch("/auth")
-      .then((response) => response.json())
+    fetch("/authReservation", {
+      method: "POST",
+      headers: {
+        Connection: "keep-alive",
+        Accept: "*",
+      },
+    })
+      .then((resp) => resp.json())
       .then((data) => {
-        data.isLogged == true
-          ? (data.type == "user"
-              ? (isConnected(true),
-                data.currentReservation
-                  ? (setData(data.userdata),
-                    setReservation(data.currentReservation))
-                  : setData(data.userdata))
-              : isConnected(false),
-            data.type == "admin" ? isAdmin(true) : isAdmin(false))
-          : (isConnected(false), isAdmin(false));
+        if (data.isLogged == true) {
+          if (data.type == "user") {
+            setConnectedUser(true);
+            if (data.currentReservation) {
+              setUserData(data.userdata);
+              setCurrentReservation(data.currentReservation);
+            } else {
+              setUserData(data.userdata);
+            }
+          }
+        } else {
+          setConnectedUser(false);
+        }
       });
   }, []);
 }

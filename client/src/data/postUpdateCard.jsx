@@ -1,12 +1,13 @@
-export default function postUpdateCard(
+export default async function postUpdateCard(
   oldTitle,
   oldDesc,
   title,
   desc,
   price,
-  formule
+  formule,
+  choiceEdit
 ) {
-  fetch("/updateCarte", {
+  const resp = await fetch("/updateCarte", {
     method: "POST",
     crossDomain: true,
     headers: {
@@ -15,12 +16,14 @@ export default function postUpdateCard(
       "Access-Control-Allow-Origin": "*",
     },
     body: JSON.stringify({
-      oldTitle: oldTitle,
-      oldDesc: oldDesc,
-      title: title,
-      desc: desc,
-      price: price,
+      oldTitle,
+      oldDesc,
+      title,
+      desc,
+      price,
       formule: formule ? formule : null,
+      choiceEdit,
     }),
   });
+  return await resp.json();
 }

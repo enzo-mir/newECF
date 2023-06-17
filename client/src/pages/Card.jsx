@@ -7,7 +7,7 @@ import {
   PlatSection,
   DessertSection,
   MenuSection,
-} from "../assets/style/carteStyle";
+} from "../assets/style/cardStyle";
 import PropTypes from "prop-types";
 
 export default function Card({ entree, plat, dessert, menu }) {

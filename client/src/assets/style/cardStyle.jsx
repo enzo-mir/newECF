@@ -18,26 +18,24 @@ const CarteContainer = styled.main`
   & h1 {
     position: relative;
     font-size: var(--font-size-h1);
-    display: grid;
-    place-items: center;
-    width: max-content;
     color: black;
+    padding: .5em;
 
     ::after,
     ::before {
       content: "";
       position: absolute;
+      left: 0;
       width: 100%;
       height: 2px;
-      background: transparent;
-      border: 1px solid black;
+      background: var(--darker-color);
       border-radius: 10px;
     }
     ::after {
-      top: -25%;
+      top: 0;
     }
     ::before {
-      bottom: -25%;
+      bottom: 0;
     }
   }
 

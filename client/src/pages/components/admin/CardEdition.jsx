@@ -2,23 +2,41 @@ import { Overlay } from "../../../assets/style/overlay";
 import { EditCardContainer } from "../../../assets/style/adminStyle";
 import { Cross } from "../../../assets/style/cross";
 import postUpdateCard from "../../../data/postUpdateCard";
-import { useEffect } from "react";
+import { cardStore } from "../../../data/stores/admin.store";
+import { useState } from "react";
 
 const CardEdition = ({
-  errorEditingCarte,
   titleCarteEdition,
   descCarteEdition,
   priceCarteEdition,
+  formuleCarteEdition,
   setDisplayEditCard,
-  setErrorEditingCard,
+  choiceEdit,
 }) => {
-  useEffect(() => {
-    return () => {
-      document.body.removeAttribute("style");
-    };
-  }, []);
+  const setCardStore = cardStore((state) => state.setCardStore);
+  const [errorEditingCard, setErrorEditingCard] = useState(false);
+  const [title, setTitle] = useState(titleCarteEdition);
+  const [desc, setDesc] = useState(descCarteEdition);
+  const [price, setPrice] = useState(priceCarteEdition);
+  const [formule, setFormule] = useState(formuleCarteEdition);
 
-  document.body.style.overflow = "hidden";
+  function submitEdition() {
+    if (!errorEditingCard) {
+      postUpdateCard(
+        titleCarteEdition,
+        descCarteEdition,
+        title,
+        desc,
+        price,
+        formule,
+        choiceEdit
+      ).then((data) =>
+        data.error
+          ? setErrorEditingCard(data.error)
+          : (setCardStore(data), setDisplayEditCard(false))
+      );
+    }
+  }
 
   return (
     <Overlay
@@ -27,7 +45,10 @@ const CardEdition = ({
         setErrorEditingCard(false);
       }}
     >
-      <EditCardContainer onClick={(e) => e.stopPropagation()}>
+      <EditCardContainer
+        onClick={(e) => e.stopPropagation()}
+        className="cardEditionCont"
+      >
         <div>
           <Cross
             style={{ position: "absolute" }}
@@ -37,69 +58,79 @@ const CardEdition = ({
             }}
           />
           <h1>Édition de la carte</h1>
-          {errorEditingCarte && <p>{errorEditingCarte}</p>}
+          {errorEditingCard && (
+            <p style={{ color: "red" }}>{errorEditingCard}</p>
+          )}
         </div>
         <div>
-          <p>titre : {titleCarteEdition}</p>
-          {descCarteEdition ? (
+          <p>titre : {title}</p>
+          {formuleCarteEdition == null ? (
             <>
-              <p>
-                description :{" "}
-                <strong style={{ textAlign: "center" }}>
-                  {descCarteEdition}
-                </strong>
-              </p>
-              <p>prix : {priceCarteEdition}</p>
+              <p>description : {desc}</p>
+              <p>prix : {price}€</p>
             </>
           ) : (
             <p>
-              formule : {priceCarteEdition}
-              <sub>(Séparer les formules par des ",")</sub>
+              formule : {formule}
+              <br />
+              <sub>(Séparer les formules par des virgules)</sub>
             </p>
           )}
         </div>
         <div>
-          <input type="text" defaultValue={titleCarteEdition} />
-          {descCarteEdition ? (
+          <input
+            type="text"
+            defaultValue={titleCarteEdition}
+            value={title}
+            onChange={(e) => {
+              setTitle(e.target.value);
+              !e.target.value
+                ? setErrorEditingCard("Erreur : Champ(s) non-remplis")
+                : setErrorEditingCard("");
+            }}
+          />
+          {formuleCarteEdition == null ? (
             <>
-              <input type="text" defaultValue={descCarteEdition} />
-              <input type="number" min="0" />
+              <input
+                type="text"
+                defaultValue={descCarteEdition}
+                value={desc}
+                onChange={(e) => {
+                  setDesc(e.target.value);
+                  !e.target.value
+                    ? setErrorEditingCard("Erreur : Champ(s) non-remplis")
+                    : setErrorEditingCard("");
+                }}
+              />
+              <input
+                type="number"
+                min="0"
+                maxLength="5"
+                defaultValue={priceCarteEdition}
+                value={price}
+                onChange={(e) => {
+                  setPrice(e.target.value);
+                  !e.target.value
+                    ? setErrorEditingCard("Erreur : Champ(s) non-remplis")
+                    : setErrorEditingCard("");
+                }}
+              />
             </>
           ) : (
-            <input type="text" defaultValue={priceCarteEdition} />
+            <input
+              type="text"
+              defaultValue={formuleCarteEdition}
+              value={formule}
+              onChange={(e) => {
+                setFormule(e.target.value);
+                !e.target.value
+                  ? setErrorEditingCard("Erreur : Champ(s) non-remplis")
+                  : setErrorEditingCard("");
+              }}
+            />
           )}
         </div>
-        <button
-          onClick={(e) => {
-            e.target.parentNode.querySelectorAll("input").forEach((inputs) => {
-              if (inputs.value === "") {
-                setErrorEditingCard("erreur : champs non-remplis");
-              } else {
-                descCarteEdition
-                  ? postUpdateCard(
-                      titleCarteEdition,
-                      descCarteEdition,
-                      e.target.parentNode.children[2].firstChild.value,
-                      e.target.parentNode.children[2].children[1].value,
-                      e.target.parentNode.children[2].children[2].value,
-                      null
-                    )
-                  : postUpdateCard(
-                      titleCarteEdition,
-                      descCarteEdition,
-                      e.target.parentNode.children[2].firstChild.value,
-                      null,
-                      null,
-                      e.target.parentNode.children[2].children[1].value
-                    );
-                window.location.reload();
-                setErrorEditingCard(false);
-              }
-            });
-          }}
-        >
-          Fin de l'édition
-        </button>
+        <button onClick={submitEdition}>Fin de l&lsquo;édition</button>
       </EditCardContainer>
     </Overlay>
   );

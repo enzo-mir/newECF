@@ -5,11 +5,13 @@ import updateProfil from "../../data/updateProfil";
 import logout from "../../data/logout";
 import deleteAccount from "../../data/deleteAccount";
 import PropTypes from "prop-types";
-import { useNavigate } from "react-router-dom";
+import { connectStore, userDataStore } from "../../data/stores/connect.store";
+import { Cross } from "../../assets/style/cross";
 
-const ProfilComponent = ({ displayProfil, userData }) => {
-  const navigate = useNavigate();
+const ProfilComponent = ({ setDisplayProfil }) => {
   const [editable, setEditable] = useState(false);
+  const userData = userDataStore((state) => state.userData);
+  const setUserData = userDataStore((state) => state.setUserData);
   const [name, setName] = useState(userData.userName);
   const [email, setEmail] = useState(userData.email);
   const [guests, setGuests] = useState(userData.convive);
@@ -18,6 +20,7 @@ const ProfilComponent = ({ displayProfil, userData }) => {
   const [mdp, setMdp] = useState(userData.password);
   let oldEmail = userData.email;
   let oldPassword = userData.password;
+  const setConnectedUser = connectStore((state) => state.setConnectedUser);
 
   useEffect(() => {
     return () => {
@@ -90,7 +93,6 @@ const ProfilComponent = ({ displayProfil, userData }) => {
   }
 
   function validationForm(obj) {
-    let values = Object.values(obj);
     var nameRegex = new RegExp(/^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/);
     var emailRegex = new RegExp(
       /^(([^<>()[\]\\.,;:\s@\\"]+(\.[^<>()[\]\\.,;:\s@\\"]+)*)|(\\".+\\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/g
@@ -99,23 +101,25 @@ const ProfilComponent = ({ displayProfil, userData }) => {
     var alergyRegex = new RegExp(/^([a-z+A-Z\\,]+[a-z+A-Z])$/gm);
     var guestsRegex = new RegExp(/^([1-9])$/);
 
-    if (nameRegex.test(values[0]) && values[0]) {
-      if (emailRegex.test(values[1]) && values[1]) {
-        if (guestsRegex.test(values[3]) && values[3]) {
-          if (alergyRegex.test(values[4]) || !values[4]) {
-            if (pwdRegex.test(values[2] && values[2])) {
+    if (nameRegex.test(obj.name) && obj.name) {
+      if (emailRegex.test(obj.email) && obj.email) {
+        if (guestsRegex.test(obj.guests) && obj.guests) {
+          if (alergyRegex.test(obj.alergy) || !obj.alergy) {
+            if (pwdRegex.test(obj.mdp && obj.mdp)) {
               updateProfil(
-                values[0],
-                values[1],
-                values[2],
-                values[3],
-                values[4],
-                values[5],
-                values[6]
+                obj.name,
+                obj.email,
+                obj.mdp,
+                obj.guests,
+                obj.alergy,
+                obj.oldEmail,
+                obj.oldPassword
               ).then((data) =>
                 Object.keys(data) == "error"
                   ? setValidationMessage(data.error)
-                  : (setValidationMessage(data.valid), navigate(0))
+                  : (setValidationMessage(data.valid),
+                    setEditable(!editable),
+                    setUserData(data.data))
               );
             } else {
               setValidationMessage(
@@ -142,7 +146,7 @@ const ProfilComponent = ({ displayProfil, userData }) => {
       .then((response) => response.json())
       .then((data) => {
         data.success
-          ? location.reload()
+          ? (setDisplayProfil(false), setConnectedUser(false), setUserData({}))
           : data.error
           ? setValidationMessage(data.error)
           : null;
@@ -150,8 +154,9 @@ const ProfilComponent = ({ displayProfil, userData }) => {
   }
 
   return (
-    <Overlay onClick={() => displayProfil(false)}>
+    <Overlay onClick={() => setDisplayProfil(false)}>
       <ContainerSettings onClick={(e) => e.stopPropagation()}>
+        <Cross onClick={() => setDisplayProfil(false)} />
         {validationMessage ? (
           <p className="error">{validationMessage}</p>
         ) : null}
@@ -176,19 +181,16 @@ const ProfilComponent = ({ displayProfil, userData }) => {
               Éditer les infos
             </button>
           ) : (
-            <button
-              onClick={() => {
-                setEditable(!editable);
-                validationForm(updateData);
-              }}
-            >
+            <button onClick={() => validationForm(updateData)}>
               Édition finit
             </button>
           )}
           <button
             onClick={() => {
               logout();
-              location.reload();
+              setDisplayProfil(false);
+              setConnectedUser(false);
+              setUserData({});
             }}
           >
             Déconnection
@@ -201,6 +203,6 @@ const ProfilComponent = ({ displayProfil, userData }) => {
 };
 ProfilComponent.propTypes = {
   userData: PropTypes.object,
-  displayProfil: PropTypes.bool,
+  setDisplayProfil: PropTypes.func,
 };
 export default ProfilComponent;

@@ -23,17 +23,17 @@ export const ContainerSettings = styled.div`
     place-items: center;
 
     @media screen and (max-width: 600px) {
-      height: auto;
       grid-template-columns: 1fr;
-      justify-content: space-around;
       row-gap: 2vh;
     }
   }
 
   & > div.cta {
     display: flex;
-    justify-content: space-around;
-    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
   }
 
   & input {
@@ -51,12 +51,9 @@ export const ContainerSettings = styled.div`
   }
 
   @media screen and (max-width: 600px) {
-    justify-content: center;
+    justify-content: space-around;
 
     & > div.cta {
-      width: auto;
-      flex-direction: column;
-      gap: 2em;
     }
   }
   @media screen and (max-height: 900px) {

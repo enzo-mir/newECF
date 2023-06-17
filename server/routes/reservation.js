@@ -1,6 +1,4 @@
 module.exports = async function reservation(app) {
-
-
     app.post("/reservation", (req, res) => {
         let response = req.body;
         let convives = parseInt(response.convives);

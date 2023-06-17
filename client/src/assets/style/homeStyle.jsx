@@ -26,20 +26,17 @@ const HeroSection = styled.section`
     place-items: center;
     grid-template-columns: 1fr 1fr;
 
-    
     & img {
       height: 100%;
       width: 100%;
-      z-index: -2;
       object-fit: cover;
       user-select: none;
       filter: brightness(70%);
     }
-    
-    @media screen and (max-width: 800px) {
+
+    @media screen and (max-width: 1100px) {
       grid-template-columns: 1fr;
       grid-template-rows: 70% 1fr;
-     
     }
 
     & > aside {
@@ -91,19 +88,16 @@ const SectionPlats = styled.section`
     gap: 5vw;
     font-size: var(--font-size);
 
-    @media screen and (max-width: 800px) {
-      flex-direction: column;
-    }
-
+    
     & p {
       width: 30%;
       line-height: 150%;
-      padding: 2rem;
+      padding: 1rem;
       height: 200px;
-
+      
       @media screen and (max-width: 800px) {
         width: 70%;
-        height: clamp(100px,15vh,150px);
+        height: clamp(100%, 20vh, 200px);
       }
 
       &:first-child {
@@ -114,6 +108,9 @@ const SectionPlats = styled.section`
         color: white;
       }
     }
+    @media screen and (max-width: 800px) {
+      flex-direction: column;
+    }
   }
   & > button {
     width: fit-content;
@@ -122,7 +119,7 @@ const SectionPlats = styled.section`
   & .imagesGalery {
     display: grid;
     width: 100%;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 200px));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 230px));
     place-items: center;
     justify-content: center;
     margin-bottom: auto;
@@ -135,6 +132,7 @@ const SectionPlats = styled.section`
       @media (pointer: fine) {
         &:hover {
           & span {
+            font-weight: bold;
             color: #fff;
           }
           & img {
@@ -147,6 +145,7 @@ const SectionPlats = styled.section`
         &:not(:hover),
         &:hover {
           & span {
+            font-weight: bold;
             color: #fff;
           }
           & img {
@@ -163,24 +162,26 @@ const SectionPlats = styled.section`
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        font-size: clamp(5px, 1vw, 20px);
         color: transparent;
-        transition: 0.15s ease-out;
+        transition: 0.2s ease-out;
         font-size: var(--font-size-little);
         width: 100%;
       }
     }
     & img {
       width: 100%;
-      width: clamp(150px, 13vw, 200px);
+      width: clamp(220px, 13vw, 200px);
       aspect-ratio: 1/1;
       object-fit: cover;
-      border-radius: 10px;
+      border-radius: 5px;
       transition: 0.15s ease-out;
     }
     @media screen and (max-width: 600px) {
       width: 100%;
       grid-template-columns: 100%;
+      & img {
+        width: clamp(175px, 13vw, 200px);
+      }
     }
   }
 
@@ -192,7 +193,6 @@ const SectionPlats = styled.section`
     background-color: var(--primary-color);
     padding: 1em;
     line-height: 150%;
-    border-radius: 10px;
   }
   & button {
     grid-area: 2 / 2 / 3 / 3;

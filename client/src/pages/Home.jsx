@@ -1,28 +1,19 @@
 import { useState } from "react";
 import Reserv from "./components/Reserv";
 import PropTypes from "prop-types";
-
 import { Wrapper, HeroSection, SectionPlats } from "../assets/style/homeStyle";
 
-const Home = ({ imagesApi, userdata, hours, setReservation }) => {
+const Home = ({ imagesApi }) => {
   const [res, setRes] = useState(false);
 
   return (
     <Wrapper>
-      {res && (
-        <Reserv
-          res={setRes}
-          userData={userdata}
-          hours={hours}
-          setReservationData={setReservation}
-        />
-      )}
+      {res && <Reserv res={setRes} />}
       <HeroSection>
         <div className="headerPage">
           <img
             src="https://images.unsplash.com/photo-1520209268518-aec60b8bb5ca?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=978&q=80"
             alt="accueil"
-            loading="lazy"
           />
           <aside>
             <h1>Le Quai Antique</h1>
@@ -71,7 +62,6 @@ const Home = ({ imagesApi, userdata, hours, setReservation }) => {
 
 Home.propTypes = {
   imagesApi: PropTypes.array,
-  userdata: PropTypes.object,
   hours: PropTypes.array,
   setReservation: PropTypes.func,
 };

@@ -18,7 +18,7 @@ export default defineConfig({
         target: "http://localhost:3000/",
         ws: true,
       },
-      "/auth": {
+      "/authReservation": {
         target: "http://localhost:3000/",
         ws: true,
       },
@@ -63,6 +63,14 @@ export default defineConfig({
         ws: true,
       },
       "/deleteReservation": {
+        target: "http://localhost:3000/",
+        ws: true,
+      },
+      "/post": {
+        target: "http://localhost:3000/",
+        ws: true,
+      },
+      "/postVerify": {
         target: "http://localhost:3000/",
         ws: true,
       },

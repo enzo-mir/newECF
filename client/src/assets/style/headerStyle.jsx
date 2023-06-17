@@ -6,20 +6,33 @@ const Wrapper = styled.header`
   width: 100%;
   height: 100px;
   display: flex;
+  justify-content: center;
+  align-items: center;
   background-color: var(--primary-color);
+  transition: all 0.2s ease-out;
   z-index: 50;
+
+  @media (pointer: fine) {
+    &.display {
+      height: 0;
+      overflow: hidden;
+    }
+  }
 
   & .imgContainer {
     display: grid;
     place-items: center;
     padding: 1rem;
+    height: 100%;
     & img {
       height: clamp(40px, 5vh, 100px);
+      aspect-ratio: 1/1;
     }
   }
 
   @media screen and (max-width: 600px) {
     height: auto;
+    justify-content: flex-start;
   }
 `;
 const BtnMenu = styled.span`
@@ -28,6 +41,7 @@ const BtnMenu = styled.span`
   transform: translateY(-50%);
   display: none;
   height: 3vh;
+  min-height: 20px;
   aspect-ratio: 1/1;
   background-image: url("${hamburgerBtn}");
   background-size: contain;
@@ -56,7 +70,7 @@ const HeaderContainer = styled.div`
     & ul {
       display: flex;
       justify-content: center;
-      column-gap: 3vw;
+      column-gap: 2vw;
       & li {
         display: grid;
         place-items: center;
@@ -65,22 +79,15 @@ const HeaderContainer = styled.div`
           position: relative;
           color: var(--darker-color);
           text-decoration: none;
-          &::after {
-            content: "";
-            position: absolute;
-            transition: all 0.5s ease-out;
-            right: 0px;
-            left: auto;
-            width: 0%;
-            bottom: -5px;
-            height: 2px;
-            background-color: var(--darker-color);
+          text-underline-offset: 8px;
+          padding: 1rem;
+          :hover {
+            font-weight: 600;
           }
 
-          &[aria-current="page"]::after {
-            width: 100%;
-            left: 0px;
-            right: auto;
+          &[aria-current="page"] {
+            text-decoration: underline;
+            font-weight: 600;
           }
         }
       }
@@ -128,23 +135,24 @@ const HeaderContainer = styled.div`
   }
 
   @media screen and (max-width: 600px) {
+    top: 0;
     background-color: var(--primary-color);
     position: absolute;
     flex-direction: column;
-    row-gap: 3vh;
     padding-block: 0em;
-    height: 0;
+    height: 0vh;
     overflow: hidden;
     transition: all 0.15s ease;
 
     &.display {
+      top: 0;
       transition: all 0.3s ease;
-      height: 40vh;
-      padding-block: 1em;
-      gap: 25px;
-      & .profil:has(button) {
-        gap: 25px;
+      height: clamp(350px, 40vh, 800px);
 
+      gap: 5vh;
+      padding-block: 1em;
+
+      & .profil:has(button) {
         :has(.reservations) {
           flex-direction: column-reverse;
         }
@@ -157,11 +165,9 @@ const HeaderContainer = styled.div`
     }
 
     nav {
-      margin-inline: auto;
-      margin-top: auto;
+      margin: 0;
       ul {
         flex-direction: column;
-        row-gap: 3vh;
       }
     }
 

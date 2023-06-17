@@ -1,93 +1,37 @@
-import { useState } from "react";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
-import Home from "../Home";
-import Card from "../Card";
-import Admin from "../Admin";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import PrivateRoute from "./PrivateRoute";
-import Connect from "../../data/Connect";
 import UndifinedRoute from "../UndifinedPage";
-import PropTypes from "prop-types";
+import { connectStore } from "../../data/stores/connect.store";
+import Connect from "../../data/Connect";
+import QueryCard from "../../queryComponent/QueryCard";
+import QueryHome from "../../queryComponent/QueryHome";
+import Header from "../components/Header";
+import QueryAdmin from "../../queryComponent/QueryAdmin";
+import Footer from "../components/Footer";
 
-const Navigation = ({ cardQuery, allDataQuery }) => {
-  const [isConnected, setIsConnected] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [userData, setUserData] = useState(null);
-  const [currentReserv, setCurrentReserv] = useState(null);
+const Navigation = () => {
+  const connectedAdmin = connectStore((state) => state.connectedAdmin);
+
   return (
     <>
-      <Connect
-        isConnected={setIsConnected}
-        isAdmin={setIsAdmin}
-        setData={setUserData}
-        setReservation={setCurrentReserv}
-      />
+      <Connect />
       <BrowserRouter>
-        <Header
-          isConnected={isConnected}
-          display={true}
-          data={userData}
-          hours={allDataQuery.data.heures}
-          isAdmin={isAdmin}
-          reservations={currentReserv}
-        />
+        <Header />
         <Routes>
           <Route path="*" element={<UndifinedRoute />} />
-          <Route
-            path="/"
-            element={
-              <Home
-                imagesApi={allDataQuery.data.image}
-                userdata={userData}
-                hours={allDataQuery.data.heures}
-                setReservation={setCurrentReserv}
-              />
-            }
-          />
-          <Route
-            path="/carte"
-            element={
-              <Card
-                entree={cardQuery.data.entree}
-                plat={cardQuery.data.plat}
-                dessert={cardQuery.data.dessert}
-                menu={cardQuery.data.menu}
-              />
-            }
-          />
-          {isAdmin && (
-            <Route element={<PrivateRoute isAdmin={isAdmin} />}>
-              <Route
-                path="/admin"
-                element={
-                  <Admin
-                    heures={allDataQuery.data.heures}
-                    imagesApi={allDataQuery.data.image}
-                    entree={cardQuery.data.entree}
-                    plat={cardQuery.data.plat}
-                    dessert={cardQuery.data.dessert}
-                    menu={cardQuery.data.menu}
-                  />
-                }
-              />
+          <Route path="/" element={<QueryHome />} />
+          <Route path="/carte" element={<QueryCard />} />
+          {connectedAdmin && (
+            <Route element={<PrivateRoute isAdmin={connectedAdmin} />}>
+              <Route path="/admin" element={<QueryAdmin />} />
             </Route>
           )}
         </Routes>
-        {isAdmin ? null : (
-          <Footer
-            hours={allDataQuery.data.heures}
-            data={userData}
-            setReservation={setCurrentReserv}
-          />
-        )}
+        <Footer />
       </BrowserRouter>
       ;
     </>
   );
 };
-Navigation.propTypes = {
-  allDataQuery: PropTypes.object,
-  cardQuery: PropTypes.object,
-};
+
 export default Navigation;

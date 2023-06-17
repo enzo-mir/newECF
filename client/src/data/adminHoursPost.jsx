@@ -1,5 +1,5 @@
 export default async function adminHoursPost(dataHours) {
-  fetch("/adminHours", {
+  return fetch("/adminHours", {
     method: "POST",
     crossDomain: true,
     headers: {
@@ -10,5 +10,5 @@ export default async function adminHoursPost(dataHours) {
     body: JSON.stringify({
       data: dataHours,
     }),
-  });
+  }).then((resp) => resp.json());
 }

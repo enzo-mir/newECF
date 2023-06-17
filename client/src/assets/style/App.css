@@ -138,6 +138,7 @@ table {
   --primary-color-a50: rgba(255, 241, 221, 0.5);
   --primary-color-a30: rgba(255, 241, 221, 0.3);
   --darker-color: #9a815e;
+  --darker-color-big: hsl(35, 21%, 39%);
   --darker-color-a70: hsla(35, 32%, 58%, 0.7);
   --darker-color-a30: hsla(35, 32%, 58%, 0.3);
   --color-whiteless: rgba(255, 255, 255, 0.5);

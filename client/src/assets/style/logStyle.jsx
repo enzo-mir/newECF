@@ -1,18 +1,21 @@
 import styled from "styled-components";
 
 const LogContainer = styled.section`
-position: absolute;
-display: flex;
-flex-direction: column;
-justify-content: space-around;
-align-items: center;
-gap: 30px;
-padding-block: 25px;
-width: 1000px;
-min-height: 60%;
-max-width: 100%;
-z-index: 150;
-background-color: #fff;
+  position: absolute;
+  display: grid;
+  place-items: center;
+  grid-template-rows: auto auto 30cqh auto;
+  gap: 30px;
+  padding-block: 25px;
+  width: 1000px;
+  min-height: 500px;
+  max-width: 100%;
+  z-index: 150;
+  background-color: #fff;
+
+  &:has(> p) {
+    grid-template-rows: auto auto auto 30cqh auto;
+  }
 
   & p {
     text-align: center;
@@ -50,22 +53,25 @@ const ContentSignIn = styled.div`
 
   & .adds {
     padding-block: 50px;
-    input {
-      border: 1px solid var(--darker-color);
-    }
   }
+  form {
+    display: grid;
+    place-items: center;
+    row-gap: 4vh;
+    
+    div {
+      display: flex;
+      column-gap: 3vw;
+      width: 80%;
 
-  div {
-    display: flex;
-    column-gap: 3vw;
-    width: 80%;
-
-    input {
-      background-color: var(--primary-color);
-      border: none;
-      padding: 0.5rem 1em;
-      font-size: var(--font-size);
-      width: 50%;
+      input {
+        background-color: var(--primary-color);
+        border: none;
+        padding: 0.5rem 1em;
+        font-size: var(--font-size);
+        width: 50%;
+        border-radius: 5px;
+      }
     }
   }
 `;
@@ -79,6 +85,7 @@ const ContentLogIn = styled.div`
     border: none;
     padding: 0.5rem 1em;
     font-size: var(--font-size);
+    border-radius: 5px;
   }
 
   & > div {

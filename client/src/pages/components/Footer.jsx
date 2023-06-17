@@ -2,20 +2,15 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Wrapper } from "../../assets/style/footerStyle";
 import Reserv from "./Reserv";
-import PropTypes from "prop-types";
+import { hourStore } from "../../data/stores/admin.store";
 
-const Footer = ({ hours, data, setReservation }) => {
+const Footer = () => {
   const [res, setRes] = useState(false);
+  const hoursStore = hourStore((state) => state.hours);
 
   return (
     <>
-      {res && (
-        <Reserv
-          res={setRes}
-          userData={data}
-          setReservationData={setReservation}
-        />
-      )}
+      {res && <Reserv res={setRes} />}
       <Wrapper>
         <table id="horaires">
           <thead>
@@ -24,15 +19,16 @@ const Footer = ({ hours, data, setReservation }) => {
             </tr>
           </thead>
           <tbody>
-            {hours.map((elem, id) => {
-              return (
-                <tr key={id}>
-                  <td>{elem.day}</td>
-                  <td>{elem.lunch}</td>
-                  <td>{elem.dinner}</td>
-                </tr>
-              );
-            })}
+            {hoursStore.length &&
+              hoursStore?.map((elem, id) => {
+                return (
+                  <tr key={id}>
+                    <td>{elem.day}</td>
+                    <td>{elem.lunch}</td>
+                    <td>{elem.dinner}</td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
         <nav>
@@ -54,12 +50,6 @@ const Footer = ({ hours, data, setReservation }) => {
       </Wrapper>
     </>
   );
-};
-
-Footer.propTypes = {
-  hours: PropTypes.array,
-  setReservation: PropTypes.func,
-  data: PropTypes.object,
 };
 
 export default Footer;

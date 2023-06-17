@@ -9,31 +9,57 @@ import {
   Wrapper,
 } from "../assets/style/adminStyle";
 import adminImageDeleted from "../data/adminImageDeleted";
-import CardEdition from "./components/admin/CardEdition";
 import PropTypes from "prop-types";
+import { hourStore, imageStore } from "../data/stores/admin.store";
+import { useNavigate } from "react-router-dom";
+import AdminCard from "./components/admin/AdminCard";
 
-const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
+const Admin = ({ imagesApi, card }) => {
   const [hoursEdit, setHoursEdit] = useState(false);
-  const [displayEditCarte, setDisplayEditCard] = useState(false);
-  const [titleCarteEdition, setTitleCarteEdition] = useState("");
-  const [descCarteEdition, setDescCarteEdition] = useState("");
-  const [priceCarteEdition, setPriceCarteEdition] = useState("");
-  const [errorEditingCarte, setErrorEditingCard] = useState(false);
   const [displayEditImage, setDisplayEditImage] = useState(false);
   const [imagesEditTitle, setImageEditTitle] = useState();
   const [imagesEditDesc, setImageEditDesc] = useState();
   const [imagesEditUrl, setImageEditUrl] = useState();
   const [addImage, setAddImage] = useState();
   const [errorHour, setErrorHour] = useState(false);
+  const [hours, setHour] = hourStore((state) => [state.hours, state.setHours]);
   const imageTitleDetails = useRef();
   const imageDescDetails = useRef();
+  const navigate = useNavigate();
 
-  function editingHours(event, text, day, time) {
-    let element = document.createElement("input");
-    element.classList.add(time);
-    element.setAttribute("id", day);
-    element.value = text;
-    event.target.parentNode.replaceChild(element, event.target);
+  const setImages = imageStore((state) => state.setImages);
+  function editingHours(event, text, day, time, reverse) {
+    if (reverse) {
+      let inputs = document.querySelectorAll("table tr input");
+      inputs.forEach((input) => {
+        let element = document.createElement("td");
+        element.innerText = input.value;
+        input.parentNode.replaceChild(element, input);
+        let childs = element.parentNode.children;
+        element.onclick = (e) => {
+          editingHours(
+            e,
+            e.target.textContent,
+            element.parentNode.firstChild.textContent,
+            childs[1] == element ? "lunch" : "dinner"
+          );
+          setHoursEdit(true);
+        };
+      });
+    } else {
+      let element = document.createElement("input");
+      element.classList.add(time);
+      element.setAttribute("id", day);
+      element.onkeydown = (e) => {
+        if (e.code === "Enter") {
+          submitHourEdition(
+            document.querySelectorAll("article table tbody input")
+          );
+        }
+      };
+      element.value = text;
+      event.target.parentNode.replaceChild(element, event.target);
+    }
   }
 
   function submitHourEdition(elem) {
@@ -51,22 +77,17 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
       const inputs = elem[i];
       hourRegexTesting = hourRegexe.test(inputs.value);
     }
-
+    console.log(hourRegexTesting);
     if (hourRegexTesting) {
       setErrorHour(false);
-      adminHoursPost(data);
-      window.location.reload();
+      adminHoursPost(data).then((data) => {
+        data.heures
+          ? (setHoursEdit(false),
+            setHour(data.heures),
+            editingHours(null, null, null, null, true))
+          : (setErrorHour(true), setHoursEdit(true));
+      });
     } else setErrorHour(true);
-  }
-
-  function editableCard(event) {
-    let title = event.target.parentNode.firstChild.textContent;
-    let desc = event.target.parentNode.children[1].textContent;
-    let price = event.target.parentNode.children[2].textContent;
-    setTitleCarteEdition(title);
-    setDescCarteEdition(desc);
-    setPriceCarteEdition(price);
-    setDisplayEditCard(true);
   }
 
   function imageEdit(event, title, description) {
@@ -82,11 +103,12 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
     setAddImage(false);
     setDisplayEditImage(true);
   }
-
-  function handleDelete(e) {
+  function handleDeleteImage(e) {
     let parentElement = e.target.parentNode.parentNode;
     let url = parentElement.querySelector("img").getAttribute("src");
-    adminImageDeleted(url).then(location.reload());
+    adminImageDeleted(url).then((data) =>
+      data?.valid ? setImages(data.valid) : navigate(0)
+    );
   }
 
   function imageAdd() {
@@ -130,7 +152,14 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
                     >
                       Éditer
                     </button>
-                    <button onClick={(e) => handleDelete(e)}>Supprimer</button>
+                    <button
+                      onClick={(e) => {
+                        handleDeleteImage(e);
+                        e.target.disabled = true;
+                      }}
+                    >
+                      Supprimer
+                    </button>
                   </aside>
                 </div>
               );
@@ -159,7 +188,7 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
               </tr>
             </thead>
             <tbody>
-              {heures.map((elem, id) => {
+              {hours?.map((elem, id) => {
                 return (
                   <tr key={id}>
                     <>
@@ -212,121 +241,7 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
           ) : null}
         </HoursContainer>
         <CardContainer>
-          {displayEditCarte ? (
-            <CardEdition
-              errorEditingCarte={errorEditingCarte}
-              titleCarteEdition={titleCarteEdition}
-              descCarteEdition={descCarteEdition}
-              priceCarteEdition={priceCarteEdition}
-              setDisplayEditCard={setDisplayEditCard}
-              setErrorEditingCard={setErrorEditingCard}
-            />
-          ) : null}
-          <h1>Carte du restaurant</h1>
-          <h2>Entrées</h2>
-          <div className="content">
-            <>
-              <div className="seul">
-                <h2>Seul</h2>
-                {entree.map((food, id) => {
-                  return !food.partage ? (
-                    <div key={id}>
-                      <h3>{food.nom}</h3>
-                      <p>{food.description}</p>
-                      <p>{food.prix}€</p>
-                      <button onClick={(e) => editableCard(e)}>
-                        <img src={editBtn} alt="edit btn" />
-                      </button>
-                    </div>
-                  ) : null;
-                })}
-              </div>
-              <div className="partage">
-                <h2>Partager</h2>
-                {entree.map((food, id) => {
-                  return food.partage ? (
-                    <div key={id}>
-                      <h3>{food.nom}</h3>
-                      <p>{food.description}</p>
-                      <p>{food.prix}€</p>
-                      <button onClick={(e) => editableCard(e)}>
-                        <img src={editBtn} alt="edit btn" />
-                      </button>
-                    </div>
-                  ) : null;
-                })}
-              </div>
-            </>
-          </div>
-          <h2>Plats</h2>
-          <div className="content">
-            <>
-              <div className="seul">
-                <h2>Seul</h2>
-                {plat.map((food, id) => {
-                  return !food.partage ? (
-                    <div key={id}>
-                      <h3>{food.nom}</h3>
-                      <p>{food.description}</p>
-                      <p>{food.prix}€</p>
-                      <button onClick={(e) => editableCard(e)}>
-                        <img src={editBtn} alt="edit btn" />
-                      </button>
-                    </div>
-                  ) : null;
-                })}
-              </div>
-              <div className="partage">
-                <h2>Partager</h2>
-                {plat.map((food, id) => {
-                  return food.partage ? (
-                    <div key={id}>
-                      <h3>{food.nom}</h3>
-                      <p>{food.description}</p>
-                      <p>{food.prix}€</p>
-                      <button onClick={(e) => editableCard(e)}>
-                        <img src={editBtn} alt="edit btn" />
-                      </button>
-                    </div>
-                  ) : null;
-                })}
-              </div>
-            </>
-          </div>
-          <h2>Desserts</h2>
-          <div className="content">
-            <div>
-              {dessert.map((food, id) => {
-                return (
-                  <div key={id} className="dessert">
-                    <h3>{food.nom}</h3>
-                    <p>{food.description}</p>
-                    <p>{food.prix}€</p>
-                    <button onClick={(e) => editableCard(e)}>
-                      <img src={editBtn} alt="edit btn" />
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          <h2>Menus</h2>
-          <div className="content">
-            <div>
-              {menu.map((food, id) => {
-                return (
-                  <div key={id} className="menu">
-                    <h3>{food.nom}</h3>
-                    <p>{food.description}</p>
-                    <p>{food.formule}</p>
-                    <button onClick={(e) => editableCard(e)}>
-                      <img src={editBtn} alt="edit btn" />
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <AdminCard card={card} />
         </CardContainer>
         <article>
           <h1>
@@ -340,12 +255,8 @@ const Admin = ({ heures, imagesApi, entree, plat, dessert, menu }) => {
 };
 
 Admin.propTypes = {
-  entree: PropTypes.object,
-  plat: PropTypes.object,
-  dessert: PropTypes.object,
-  menu: PropTypes.object,
-  heures: PropTypes.array,
   imagesApi: PropTypes.array,
+  card: PropTypes.object,
 };
 
 export default Admin;

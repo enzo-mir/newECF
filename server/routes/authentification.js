@@ -20,7 +20,7 @@ module.exports = async function authentification(app) {
             }
         );
     });
-    app.get("/auth", (req, res) => {
+    app.post("/authReservation", (req, res) => {
         if (req.session.user) {
             let data = req.session.user[0];
             app.mysql.query(

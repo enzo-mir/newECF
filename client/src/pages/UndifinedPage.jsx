@@ -20,8 +20,7 @@ const Wrapper = styled.main`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 80vh;
-  padding-block: 150px;
+  height: 100vh;
   background: var(--color-blackless);
   & h1 {
     position: relative;

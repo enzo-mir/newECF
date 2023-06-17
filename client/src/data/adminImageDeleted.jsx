@@ -1,5 +1,5 @@
 const adminImageDeleted = async (oldUrl) => {
-  let postDataImage = fetch("/adminImageDeleted", {
+  const resp = await fetch("/adminImageDeleted", {
     method: "POST",
     headers: {
       "Content-Type": "application/json; charset=utf-8",
@@ -10,7 +10,7 @@ const adminImageDeleted = async (oldUrl) => {
       oldUrl,
     }),
   });
-  return postDataImage;
+  return await resp.json();
 };
 
 export default adminImageDeleted;

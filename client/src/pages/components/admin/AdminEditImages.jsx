@@ -1,14 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { Overlay } from "../../../assets/style/overlay";
-import styled from "styled-components";
-import editBtn from "../../../assets/images/edit_btn.png";
 import { Cross } from "../../../assets/style/cross";
+import PropTypes from "prop-types";
+import { imageStore } from "../../../data/stores/admin.store";
+import { useNavigate } from "react-router-dom";
+import { ContainerWrapperEditImage } from "../../../assets/style/adminStyle";
 
 const AdminEditImages = ({ title, description, url, displaying, adding }) => {
   const [titleChange, setTitleChange] = useState(title);
   const [descChange, setDescChange] = useState(description);
   const [imgSrc, setImgSrc] = useState(url);
-  const [errorFormat, setErrorFormat] = useState(false);
+  const [error, setError] = useState(false);
+  const setImages = imageStore((state) => state.setImages);
+
+  let navigate = useNavigate();
 
   useEffect(() => {
     return () => {
@@ -31,7 +36,8 @@ const AdminEditImages = ({ title, description, url, displaying, adding }) => {
     setImgSrc(urlChanging);
   }
 
-  async function handleSubmit() {
+  function handleSubmitEdition(e) {
+    e.target.disabled = true;
     if (imgTargetFile) {
       if (
         imgTargetFile.type === "image/png" ||
@@ -45,7 +51,7 @@ const AdminEditImages = ({ title, description, url, displaying, adding }) => {
           .then((response) => response.json())
           .then(async (data) => {
             await data;
-            let postDataImage = fetch("/adminImageEdited", {
+            fetch("/adminImageEdited", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json; charset=utf-8",
@@ -60,12 +66,20 @@ const AdminEditImages = ({ title, description, url, displaying, adding }) => {
                 pubId: data.public_id,
                 add: false,
               }),
-            });
-            await postDataImage.then(window.location.reload());
+            })
+              .then((resp) => resp.json())
+              .then((data) => {
+                data?.valid
+                  ? (setImages(data.valid),
+                    setError(data.message),
+                    displaying(false))
+                  : (setError("Erreur lors de la modification"),
+                    (e.target.disabled = false));
+              });
           });
-        setErrorFormat(false);
+        setError(false);
       } else {
-        setErrorFormat("Erreur de format, format convenus : JPG, PNG, JPEG ");
+        setError("Erreur de format, format convenus : JPG, PNG, JPEG ");
       }
     } else {
       fetch("/adminImageEdited", {
@@ -87,7 +101,7 @@ const AdminEditImages = ({ title, description, url, displaying, adding }) => {
     }
   }
 
-  function handleAdd() {
+  function handleSubmitAdd() {
     if (
       imgTargetFile.type === "image/png" ||
       imgTargetFile.type === "image/jpeg" ||
@@ -101,9 +115,8 @@ const AdminEditImages = ({ title, description, url, displaying, adding }) => {
               body: fd.current,
             })
               .then((response) => response.json())
-              .then(async (data) => {
-                await data;
-                let postDataImage = fetch("/adminImageEdited", {
+              .then((data) => {
+                fetch("/adminImageEdited", {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json; charset=utf-8",
@@ -118,22 +131,29 @@ const AdminEditImages = ({ title, description, url, displaying, adding }) => {
                     pubId: data.public_id,
                     add: true,
                   }),
-                });
-                await postDataImage.then(window.location.reload());
+                })
+                  .then((resp) => resp.json())
+                  .then((data) => {
+                    data?.valid
+                      ? (setImages(data.valid),
+                        setError(data.message),
+                        displaying(false))
+                      : navigate(0);
+                  });
               });
           }
         }
       }
     } else {
-      setErrorFormat("Erreur de format, format convenus : JPG, PNG, JPEG ");
+      setError("Erreur de format, format convenus : JPG, PNG, JPEG ");
     }
   }
 
   return (
     <Overlay onClick={() => displaying(false)}>
-      <ContainerWrapper onClick={(e) => e.stopPropagation()}>
+      <ContainerWrapperEditImage onClick={(e) => e.stopPropagation()}>
         <Cross onClick={() => displaying(false)} />
-        {errorFormat && <p>{errorFormat}</p>}
+        {error && <p>{error}</p>}
         <input
           type="file"
           id="imageAdminChange"
@@ -171,83 +191,21 @@ const AdminEditImages = ({ title, description, url, displaying, adding }) => {
           value={descChange}
         />
         {adding ? (
-          <button id="submitEditImage" onClick={() => handleAdd()}>
-            Ajouter
-          </button>
+          <button onClick={() => handleSubmitAdd()}>Ajouter</button>
         ) : (
-          <button id="submitEditImage" onClick={() => handleSubmit()}>
-            Envoyer
-          </button>
+          <button onClick={(e) => handleSubmitEdition(e)}>Envoyer</button>
         )}
-      </ContainerWrapper>
+      </ContainerWrapperEditImage>
     </Overlay>
   );
 };
-const ContainerWrapper = styled.div`
-  position: absolute;
-  display: grid;
-  place-items: center;
-  padding-block: 50px;
-  width: 1000px;
-  min-height: 60vh;
-  max-width: 100%;
-  z-index: 150;
-  background-color: #fff;
-  font-size: var(--font-size);
-  & label {
-    position: relative;
-    z-index: -1;
 
-    .addImageCase {
-      width: clamp(150px, 13vw, 200px);
-      aspect-ratio: 1/1;
-      border-radius: 10px;
-      transition: 0.15s ease-out;
-      background-size: cover !important;
-      background-position: center !important;
-      background-repeat: no-repeat !important;
-    }
-
-    &::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: url(${editBtn});
-      background-repeat: no-repeat;
-      width: 30px;
-      height: 30px;
-      opacity: 0;
-      transition: 0.15s ease-out;
-      z-index: 1;
-    }
-    &:hover {
-      cursor: pointer;
-      & img {
-        filter: brightness(50%);
-      }
-
-      &::after {
-        opacity: 1;
-      }
-    }
-  }
-
-  & img {
-    width: clamp(150px, 13vw, 200px);
-    aspect-ratio: 1/1;
-    object-fit: cover;
-    border-radius: 10px;
-    transition: 0.15s ease-out;
-  }
-  & input {
-    font-size: var(--font-size);
-    width: 75%;
-    &[type="file"] {
-      display: none;
-    }
-  }
-`;
+AdminEditImages.propTypes = {
+  title: PropTypes.string,
+  description: PropTypes.string,
+  url: PropTypes.string,
+  displaying: PropTypes.func,
+  adding: PropTypes.bool,
+};
 
 export default AdminEditImages;

@@ -29,7 +29,7 @@ export const Wrapper = styled.footer`
         position: absolute;
         left: 50%;
         transform: translate(-50%, -50%);
-        height: 5px;
+        height: 2px;
         background-color: var(--darker-color);
       }
 

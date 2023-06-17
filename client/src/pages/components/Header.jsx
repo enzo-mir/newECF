@@ -12,30 +12,60 @@ import Reserv from "./Reserv";
 import PropTypes from "prop-types";
 import logout from "../../data/logout";
 import PopReservation from "./PopReservation";
+import { connectStore, userDataStore } from "../../data/stores/connect.store";
 
-const Header = ({ isConnected, data, hours, isAdmin, reservations }) => {
+const Header = () => {
   const [logPage, setLogPage] = useState(false);
   const [profilPage, setProfilPage] = useState(false);
   const [res, setRes] = useState(false);
   const [togglePage, setTogglePage] = useState("");
-  const [displayModal, setDisplayModal] = useState();
-  const [dataReservation, setDataReservation] = useState(reservations);
+  const [displayModalReservation, setDisplayModalReservation] = useState(false);
+  const [displayHeader, setDisplayHeader] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  useEffect(() => {
-    setDataReservation(reservations);
-  }, [reservations]);
+  const connectedUser = connectStore((state) => state.connectedUser);
+  const [isAdmin, setConnectedAdmin] = connectStore((state) => [
+    state.connectedAdmin,
+    state.setConnectedAdmin,
+  ]);
+  const [data, reservations, setCurrentReservation] = userDataStore((state) => [
+    state.userData,
+    state.currentReservation,
+    state.setCurrentReservation,
+  ]);
+
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [location]);
+    if (location.pathname !== "/admin" && isAdmin && !logPage) {
+      logout();
+      navigate("/");
+      setConnectedAdmin(false);
+    }
+  }, [location, setConnectedAdmin, isAdmin, logPage, navigate]);
 
-  document.onmouseup = (e) => {
+  useEffect(() => {
+    displayModalReservation || logPage
+      ? document.body.style.overflow == "hidden"
+      : document.body.removeAttribute("class");
+  }, [displayModalReservation, logPage]);
+
+  let prevScroll = window.pageYOffset;
+
+  document.addEventListener("scroll", () => {
+    var currentScroll = window.pageYOffset;
+    if (prevScroll > currentScroll) {
+      setDisplayHeader(false);
+    } else {
+      setDisplayHeader(true);
+    }
+    prevScroll = currentScroll;
+  });
+
+  document.onmousedown = (e) => {
     let obj = document.querySelector("header");
     let dropDownContent = obj.children[1];
-    if (dropDownContent.classList.contains("display")) {
-      if (!obj.contains(e.target)) {
-        dropDownContent.classList.remove("display");
-      }
+    if (!obj.contains(e.target)) {
+      dropDownContent.classList.remove("display");
     }
   };
   const NavMenu = () => {
@@ -45,7 +75,7 @@ const Header = ({ isConnected, data, hours, isAdmin, reservations }) => {
           onClick={() => {
             logout();
             navigate("/");
-            navigate(0);
+            setConnectedAdmin(false);
           }}
         >
           Déconnection
@@ -56,24 +86,10 @@ const Header = ({ isConnected, data, hours, isAdmin, reservations }) => {
         <nav>
           <ul>
             <li>
-              <NavLink
-                to="/"
-                className={({ isActive, isPending }) =>
-                  isPending ? "pending" : isActive ? "active" : ""
-                }
-              >
-                Accueil
-              </NavLink>
+              <NavLink to="/">Accueil</NavLink>
             </li>
             <li>
-              <NavLink
-                to="/carte"
-                className={({ isActive, isPending }) =>
-                  isPending ? "pending" : isActive ? "active" : ""
-                }
-              >
-                Carte
-              </NavLink>
+              <NavLink to="/carte">Carte</NavLink>
             </li>
             <li>
               <button className="btnReserve" onClick={() => setRes(true)}>
@@ -83,7 +99,7 @@ const Header = ({ isConnected, data, hours, isAdmin, reservations }) => {
           </ul>
         </nav>
         <div className="profil">
-          {!isConnected ? (
+          {!connectedUser ? (
             <>
               <button
                 className="signIn"
@@ -108,9 +124,9 @@ const Header = ({ isConnected, data, hours, isAdmin, reservations }) => {
             <>
               <button
                 className="reservations"
-                onClick={() => setDisplayModal(true)}
+                onClick={() => setDisplayModalReservation(true)}
               >
-                {dataReservation ? dataReservation.length : reservations.length}
+                {reservations.length}
               </button>
               <button id="profil" onClick={() => setProfilPage(true)}>
                 {data ? data.userName.charAt(0) : null}
@@ -131,19 +147,17 @@ const Header = ({ isConnected, data, hours, isAdmin, reservations }) => {
       {logPage ? (
         <Log displayPage={setLogPage} togglePage={togglePage} />
       ) : null}
-      {profilPage ? (
-        <ProfilComponent displayProfil={setProfilPage} userData={data} />
-      ) : null}
-      {res ? <Reserv res={setRes} userData={data} hours={hours} setReservationData={setDataReservation} /> : null}
-      {displayModal ? (
+      {profilPage ? <ProfilComponent setDisplayProfil={setProfilPage} /> : null}
+      {res ? <Reserv res={setRes} /> : null}
+      {displayModalReservation ? (
         <PopReservation
-          data={dataReservation || reservations}
-          setDisplay={setDisplayModal}
-          setData={setDataReservation}
+          data={reservations}
+          setDisplay={setDisplayModalReservation}
+          setData={setCurrentReservation}
         />
       ) : null}
 
-      <Wrapper>
+      <Wrapper className={displayHeader ? "display" : ""}>
         <div className="imgContainer">
           <Link to="/">
             <img src={icon} alt="Icon du site" />
@@ -151,27 +165,9 @@ const Header = ({ isConnected, data, hours, isAdmin, reservations }) => {
         </div>
         <NavMenu />
         <BtnMenu
-          onClick={(e) => {
-            e.target.parentNode.children[1].classList.toggle("display");
-            let elemLink = Object.values(
-              e.target.parentNode.children[1].children
-            );
-
-            elemLink.map((el) => {
-              Object.values(el.querySelectorAll("a")).map((a) => {
-                a.onclick = () =>
-                  document
-                    .querySelector(".display")
-                    .classList.remove("display");
-              });
-              Object.values(el.querySelectorAll("button")).map((button) => {
-                button.onclick = () =>
-                  document
-                    .querySelector(".display")
-                    .classList.remove("display");
-              });
-            });
-          }}
+          onClick={(e) =>
+            e.target.parentNode.children[1].classList.toggle("display")
+          }
         />
       </Wrapper>
     </>
@@ -181,9 +177,8 @@ const Header = ({ isConnected, data, hours, isAdmin, reservations }) => {
 Header.propTypes = {
   data: PropTypes.object,
   isAdmin: PropTypes.bool,
-  isConnected: PropTypes.bool,
+  connectedUser: PropTypes.bool,
   display: PropTypes.bool,
-  hours: PropTypes.array,
   reservations: PropTypes.array,
 };
 

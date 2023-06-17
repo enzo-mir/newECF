@@ -16,6 +16,7 @@
     "@fastify/session": "^10.3.0",
     "@fastify/static": "^6.10.1",
     "cloudinary": "^1.36.4",
+    "dotenv": "^16.0.3",
     "fastify": "^4.17.0",
     "path": "^0.12.7"
   }

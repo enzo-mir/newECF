@@ -9,19 +9,30 @@ import {
 } from "../../assets/style/reserveStyle";
 import { Cross } from "../../assets/style/cross";
 import PropTypes from "prop-types";
+import { useRef } from "react";
+import { userDataStore } from "../../data/stores/connect.store";
+import { hourStore } from "../../data/stores/admin.store";
 
-export default function Reserv({ res, userData, hours, setReservationData }) {
-  const [date, setDate] = useState(null);
-  const [guests, setGuests] = useState(userData? userData.convive : 1);
-  const [email, setEmail] = useState(userData? userData.email : "");
-  const [name, setName] = useState(userData? userData.userName : "");
+export default function Reserv({ res }) {
+  const [userData, setReservationData] = userDataStore((state) => [
+    state.userData,
+    state.setCurrentReservation,
+  ]);
+  const hours = hourStore((state) => state.hours);
+
+  const [date, setDate] = useState(new Date().toLocaleDateString("Fr-ca"));
+  const [guests, setGuests] = useState(userData?.convive || 1);
+  const [email, setEmail] = useState(userData?.email || "");
+  const [name, setName] = useState(userData?.userName || "");
   const [resError, setResError] = useState("");
   const [showAllergy, setShowAllergy] = useState(false);
-  const [alergy, setAlergy] = useState(userData? userData.alergie : "");
+  const [alergy, setAlergy] = useState(userData?.alergie || "");
   const [DTable, setDTable] = useState([]);
   const [LTable, setLTable] = useState([]);
+  const hourTargeted = useRef(null);
 
   useEffect(() => {
+    handleChangeDate();
     return () => {
       document.body.removeAttribute("style");
     };
@@ -33,11 +44,16 @@ export default function Reserv({ res, userData, hours, setReservationData }) {
   document.body.style.overflow = "hidden";
 
   function handleChangeDate(e) {
-    let dateDay = new Date(e.target.value).toLocaleDateString("fr-FR", {
-      weekday: "long",
-    });
+    let dateDay = new Date(e?.target.value || date).toLocaleDateString(
+      "fr-FR",
+      {
+        weekday: "long",
+      }
+    );
 
-    let fullDate = new Date(e.target.value).toLocaleDateString("fr-CA");
+    let fullDate = new Date(e?.target.value || date).toLocaleDateString(
+      "fr-CA"
+    );
 
     setDate(fullDate);
 
@@ -57,12 +73,12 @@ export default function Reserv({ res, userData, hours, setReservationData }) {
       }
     });
 
-    spliting(hourFetchLunch, lunchTable);
-    spliting(hourFetchDinner, dinnerTable);
+    convertDataToHourTable(hourFetchLunch, lunchTable);
+    convertDataToHourTable(hourFetchDinner, dinnerTable);
 
-    function spliting(fetch, table) {
-      if (fetch.indexOf("-") !== -1) {
-        let splitingLunch = fetch.split(" - ");
+    function convertDataToHourTable(hourSlice, table) {
+      if (hourSlice.indexOf("-") !== -1) {
+        let splitingLunch = hourSlice.split(" - ");
         let splitHourLunch = splitingLunch[0].split("h");
         let splitMinuteLunch = splitingLunch[1].split("h");
         let startHourLunch = parseInt(splitHourLunch[0]);
@@ -76,9 +92,14 @@ export default function Reserv({ res, userData, hours, setReservationData }) {
           ? endHourLunch
           : endHourLunch + endDecimalLunch;
 
+        /* => tableau de données qui retrace les heures et leurs plages d'horaires avec décallage
+           de 15 min (60 * 0.25) jusqu'à 30 min (60 * 0.5) avant la fin de la plage horaire */
+
         for (let i = fullStartLunch; i <= fullEndLunch - 0.5; i += 0.25) {
           table.push(i + "");
         }
+
+        /* Conversion des heures décimales en heures traditionnelles ex => 6,25 -> 6h15 */
         table.forEach((elem) => {
           var sliceMinutes;
           if (elem.indexOf(".") !== -1) {
@@ -92,12 +113,18 @@ export default function Reserv({ res, userData, hours, setReservationData }) {
                   (elem.slice(3) * 0.6).toString();
           } else sliceMinutes = elem + "h";
 
+          /* push final */
+
           table.push(sliceMinutes);
         });
-        if (table == dinnerTable) {
-          setDTable(table.slice(table.length / 2));
-        } else if (table == lunchTable) {
-          setLTable(table.slice(table.length / 2));
+
+        switch (table) {
+          case dinnerTable:
+            setDTable(table.slice(table.length / 2));
+            break;
+          case lunchTable:
+            setLTable(table.slice(table.length / 2));
+            break;
         }
       }
     }
@@ -119,6 +146,8 @@ export default function Reserv({ res, userData, hours, setReservationData }) {
   let time;
 
   function selectHours(e) {
+    hourTargeted.current = e.target.innerText;
+
     unselectHours();
     let parentToGetJourney =
       e.target.parentNode.parentNode.parentNode.getAttribute("id");
@@ -129,69 +158,35 @@ export default function Reserv({ res, userData, hours, setReservationData }) {
     time = parentToGetJourney.slice(0, parentToGetJourney.indexOf("Hours"));
   }
 
-  const ErrorReservation = () => {
-    return <p>{resError}</p>;
-  };
-
   function submitReservation(e) {
     e.target.parentNode.parentNode.scrollTo({
       top: 0,
       left: 0,
       behavior: "smooth",
     });
-    let hourTargeted = document.querySelector(".selected")
-      ? document.querySelector(".selected").textContent
-      : null;
+
     if (guests > 0 && guests < 10) {
-      if (date !== null) {
-        if (email !== undefined) {
-          if (name !== undefined) {
-            if (hourTargeted !== null) {
-              if (alergy) {
-                postReservation(
-                  guests,
-                  date,
-                  email,
-                  name,
-                  hourTargeted,
-                  alergy,
-                  time
-                ).then((data) => {
-                  Object.keys(data) == "error"
-                    ? setResError(data.error)
-                    : (setResError("Réservation validé !"),
-                      data.valid ? setReservationData(data.valid) : null,
-                      (e.target.style.pointerEvents = "none"),
-                      setTimeout(() => {
-                        e.target.style.pointerEvents = "auto";
-                        res(false);
-                      }, 3500));
-                });
-              } else {
-                postReservation(
-                  guests,
-                  date,
-                  email,
-                  name,
-                  hourTargeted,
-                  "",
-                  time
-                ).then(async (data) => {
-                  Object.keys(data) == "error"
-                    ? setResError(data.error)
-                    : (setResError("Réservation validé !"),
-                      data.valid ? setReservationData(data.valid) : null,
-                      (e.target.style.pointerEvents = "none"),
-                      setTimeout(() => {
-                        e.target.style.pointerEvents = "auto";
-                        res(false);
-                      }, 2500));
-                });
-              }
+      if (date !== null && new Date().getTime() <= new Date().getTime()) {
+        if (email) {
+          if (name) {
+            if (hourTargeted.current !== null) {
+              postReservation(
+                guests,
+                date,
+                email,
+                name,
+                hourTargeted.current,
+                alergy || "",
+                time
+              ).then((data) => {
+                data.error
+                  ? setResError(data.error)
+                  : (setReservationData(data.valid), res(false));
+              });
             } else setResError("Choisissez une heure de réservation");
           } else setResError("Veuillez renseignez un nom de réservation");
         } else setResError("Veuillez renseignez votre adresse e-mail");
-      } else setResError("Choisissez une date de réservation");
+      } else setResError("Choisissez une date de réservation valide");
     } else setResError("Le nombre de convives doit être compris entre 1 et 9");
   }
 
@@ -200,7 +195,7 @@ export default function Reserv({ res, userData, hours, setReservationData }) {
       <ReservationContainer onClick={(e) => e.stopPropagation()}>
         <Cross onClick={() => res(false)} />
         <h1>Réservez votre table</h1>
-        {resError ? <ErrorReservation /> : null}
+        {resError ? <p>{resError}</p> : null}
         <OptionsReserv>
           <span></span>
           <input
@@ -218,26 +213,23 @@ export default function Reserv({ res, userData, hours, setReservationData }) {
             id="date"
             onChange={handleChangeDate}
             min={new Date().toLocaleDateString("fr-CA")}
+            value={date}
           />
           <input
             type="email"
             id="email"
             required
             placeholder="Entrez votre e-mail"
-            value={userData ? userData.email : email}
-            onChange={(e) =>
-              userData ? userData.email : setEmail(e.target.value)
-            }
+            value={userData?.email || email}
+            onChange={(e) => userData?.email || setEmail(e.target.value)}
           />
           <input
             type="text"
             id="name"
             required
             placeholder="Entrez votre nom"
-            value={userData ? userData.userName : name}
-            onChange={(e) =>
-              userData ? userData.userName : setName(e.target.value)
-            }
+            value={userData?.userName || name}
+            onChange={(e) => userData?.userName || setName(e.target.value)}
           />
         </OptionsReserv>
         <div id="lunchHours">
@@ -294,10 +286,7 @@ export default function Reserv({ res, userData, hours, setReservationData }) {
           <button
             id="submitRes"
             type="submit"
-            onClick={(e) => {
-              e.stopPropagation();
-              submitReservation(e);
-            }}
+            onClick={(e) => submitReservation(e)}
           >
             Réservez la table
           </button>
